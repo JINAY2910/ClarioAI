@@ -1,0 +1,202 @@
+:root {
+  --color-bg: #050505;
+  --color-text: #ffffff;
+  --color-text-dim: #a3a3a3;
+  --color-prime: #4ade80;
+  --color-prime-glow: rgba(74, 222, 128, 0.5);
+  --color-prime-dim: rgba(74, 222, 128, 0.1);
+  --color-warn: #fbbf24;
+  --color-danger: #ef4444;
+  --color-card-bg: rgba(255, 255, 255, 0.03);
+  --color-card-border: rgba(255, 255, 255, 0.06);
+  --color-sidebar-bg: rgba(10, 10, 10, 0.95);
+
+  --font-family: 'Inter', system-ui, -apple-system, sans-serif;
+
+  --spacing-xs: 0.5rem;
+  --spacing-sm: 1rem;
+  --spacing-md: 1.5rem;
+  --spacing-lg: 2rem;
+  --spacing-xl: 3rem;
+
+  --radius-lg: 24px;
+  --radius-md: 16px;
+  --radius-sm: 8px;
+  --radius-full: 999px;
+
+  --safe-top: env(safe-area-inset-top, 20px);
+  --safe-bottom: env(safe-area-inset-bottom, 20px);
+}
+
+body {
+  margin: 0;
+  background-color: #000000;
+  color: var(--color-text);
+  font-family: var(--font-family);
+  -webkit-font-smoothing: antialiased;
+  overflow-x: hidden;
+  min-height: 100vh;
+  position: relative;
+}
+
+/* Aurora Background Effect */
+body::before,
+body::after {
+  content: '';
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  width: 100vw;
+  height: 100vh;
+  transform: translate(-50%, -50%);
+  z-index: -1;
+  pointer-events: none;
+  filter: blur(100px);
+  opacity: 0.6;
+}
+
+body::before {
+  background: radial-gradient(circle at 50% 50%, rgba(16, 185, 129, 0.15), transparent 60%);
+  animation: aurora-1 15s infinite alternate;
+}
+
+body::after {
+  background: radial-gradient(circle at 50% 50%, rgba(59, 130, 246, 0.12), transparent 60%);
+  animation: aurora-2 20s infinite alternate-reverse;
+}
+
+@keyframes aurora-1 {
+  0% {
+    transform: translate(-60%, -60%) scale(1);
+  }
+
+  100% {
+    transform: translate(-40%, -40%) scale(1.2);
+  }
+}
+
+@keyframes aurora-2 {
+  0% {
+    transform: translate(-40%, -40%) scale(1.2);
+  }
+
+  100% {
+    transform: translate(-60%, -60%) scale(1);
+  }
+}
+
+#root {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+h1,
+h2,
+h3 {
+  margin: 0;
+  font-weight: 500;
+  /* Sophisticated semi-bold, not heavy */
+  letter-spacing: -0.03em;
+  /* Tighter tracking for modern feel */
+  line-height: 1.1;
+}
+
+h1 {
+  font-size: 2.5rem;
+  background: linear-gradient(to bottom, #ffffff, #a3a3a3);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  display: inline-block;
+}
+
+h2 {
+  font-size: 1.75rem;
+}
+
+h3 {
+  font-size: 1.125rem;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+}
+
+p {
+  margin: 0;
+  line-height: 1.6;
+  /* improved readability */
+  color: var(--color-text-dim);
+  font-weight: 400;
+  letter-spacing: -0.01em;
+}
+
+button {
+  font-family: inherit;
+  border: none;
+  cursor: pointer;
+  background: none;
+  color: inherit;
+  padding: 0;
+  -webkit-tap-highlight-color: transparent;
+}
+
+/* Utilities */
+.text-prime {
+  color: var(--color-prime);
+}
+
+.text-warn {
+  color: var(--color-warn);
+}
+
+.text-white {
+  color: var(--color-text);
+}
+
+/* Insight Screen Back Button */
+.insight-back-btn {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: transparent;
+  border: none;
+  color: var(--color-text-dim);
+  cursor: pointer;
+  font-size: 0.9rem;
+  padding: 8px 0;
+  transition: color 0.2s;
+  z-index: 20;
+}
+
+.insight-back-btn:hover {
+  color: var(--color-text);
+}
+
+.mobile-back-container {
+  width: 100%;
+  max-width: 600px;
+  margin: 0 auto;
+  padding-bottom: 16px;
+}
+
+@media (min-width: 769px) {
+  .insight-back-btn {
+    position: absolute;
+    top: 12px;
+    left: 24px;
+    /* Close to the sidebar */
+  }
+
+  .mobile-back-container {
+    /* Hide the container's taking up of space on desktop, 
+        since the child is absolute positioned there anyway, 
+        we don't want the padding affecting layout */
+    padding-bottom: 0;
+    height: 0;
+    margin: 0;
+  }
+}
