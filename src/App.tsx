@@ -1,22 +1,40 @@
 import { useState } from 'react'
 import { Layout } from './components/Layout'
 import { Hero } from './components/Hero'
+import { AnalysisResult, type AnalysisData } from './components/AnalysisResult'
 import { AuthProvider } from './context/AuthContext'
 import { DataProvider } from './context/DataContext'
 
 const AppContent = () => {
   const [activeTab, setActiveTab] = useState('home');
+  const [analysisData, setAnalysisData] = useState<AnalysisData | null>(null);
+
+  const handleAnalysisComplete = (data: AnalysisData) => {
+    setAnalysisData(data);
+    setActiveTab('results');
+  };
+
+  const handleBackToHome = () => {
+    setAnalysisData(null);
+    setActiveTab('home');
+  };
 
   const renderContent = () => {
     switch (activeTab) {
       case 'home':
-        return <Hero />;
+        return <Hero onAnalysisComplete={handleAnalysisComplete} />;
+      case 'results':
+        return analysisData ? (
+          <AnalysisResult data={analysisData} onReset={handleBackToHome} />
+        ) : (
+          <div className="flex items-center justify-center h-full text-secondary">No analysis data</div>
+        );
       case 'history':
         return <div className="flex items-center justify-center h-full text-secondary">History Limit Reached</div>;
       case 'settings':
         return <div className="flex items-center justify-center h-full text-secondary">Settings Unavailable</div>;
       default:
-        return <Hero />;
+        return <Hero onAnalysisComplete={handleAnalysisComplete} />;
     }
   };
 

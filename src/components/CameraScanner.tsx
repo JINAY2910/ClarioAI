@@ -149,17 +149,6 @@ export const CameraScanner: React.FC<CameraScannerProps> = ({ isOpen, onClose, o
                 {/* Bottom Controls */}
                 <div className="relative bg-gradient-to-t from-black/90 via-black/70 to-transparent p-4 md:p-6 pb-6 md:pb-8">
                     <div className="flex items-center justify-center gap-8 md:gap-12 max-w-2xl mx-auto">
-                        {/* Flash Button */}
-                        <button
-                            onClick={() => setFlashEnabled(!flashEnabled)}
-                            className={`flex flex-col items-center gap-2 transition-all ${flashEnabled ? 'text-accent' : 'text-white/60'}`}
-                        >
-                            <div className="w-12 h-12 md:w-14 md:h-14 rounded-full bg-white/10 flex items-center justify-center hover:bg-white/20 transition-all">
-                                <Zap className="w-5 h-5 md:w-6 md:h-6" fill={flashEnabled ? 'currentColor' : 'none'} />
-                            </div>
-                            <span className="text-xs md:text-sm">Flash</span>
-                        </button>
-
                         {/* Capture Button */}
                         <button
                             onClick={handleCapture}
@@ -167,18 +156,6 @@ export const CameraScanner: React.FC<CameraScannerProps> = ({ isOpen, onClose, o
                             className={`w-16 h-16 md:w-20 md:h-20 rounded-full border-4 border-white bg-white/20 hover:bg-white/30 transition-all relative group ${isCapturing ? 'opacity-50 scale-95' : ''}`}
                         >
                             <div className={`absolute inset-2 rounded-full bg-white group-hover:scale-95 transition-transform ${isCapturing ? 'scale-75' : ''}`}></div>
-                        </button>
-
-                        {/* Upload Button */}
-                        <button
-                            onClick={handleUploadClick}
-                            disabled={isCapturing}
-                            className="flex flex-col items-center gap-2 transition-all text-white/60 hover:text-white"
-                        >
-                            <div className="w-12 h-12 md:w-14 md:h-14 rounded-full bg-white/10 flex items-center justify-center hover:bg-white/20 transition-all">
-                                <ImageIcon className="w-5 h-5 md:w-6 md:h-6" />
-                            </div>
-                            <span className="text-xs md:text-sm">Upload</span>
                         </button>
                     </div>
                 </div>

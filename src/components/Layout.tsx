@@ -75,21 +75,11 @@ export const Layout: React.FC<LayoutProps> = ({ children, activeTab, onNavigate 
               </button>
             ))}
           </nav>
-
-          <div className="mt-auto pt-4 border-t border-white/5">
-            <div className="flex items-center gap-3 px-4 py-2">
-              <div className="w-8 h-8 rounded-full bg-gradient-to-tr from-accent to-purple-500" />
-              <div className="flex flex-col">
-                <span className="text-sm font-medium text-white">User</span>
-                <span className="text-xs text-secondary">Pro Plan</span>
-              </div>
-            </div>
-          </div>
         </div>
       </aside>
 
       {/* Main Content */}
-      <main className="flex-1 overflow-hidden relative pt-16 md:pt-0">
+      <main className="flex-1 overflow-y-auto relative pt-16 md:pt-0">
         {children}
       </main>
 
