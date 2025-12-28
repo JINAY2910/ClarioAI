@@ -138,6 +138,20 @@
   animation: tap-hand 1.5s ease-in-out infinite;
 }
 
+@keyframes rotate {
+  from {
+    transform: rotate(0deg);
+  }
+
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.animate-rotate-slow {
+  animation: rotate 60s linear infinite;
+}
+
 /* Typing Cursor Animation */
 @keyframes blink-cursor {
 

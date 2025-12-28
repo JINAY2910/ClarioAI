@@ -1,179 +1,125 @@
-import { useEffect, useState } from 'react';
-import { Send, Image as ImageIcon, Search, Zap, Mic } from 'lucide-react';
+import { useState } from 'react';
+import { Send, Image as ImageIcon, Search, Zap, Mic, Camera, Pizza, Coffee, Smartphone } from 'lucide-react';
 import { CameraScanner } from './CameraScanner';
+import { AnalysisResult, type AnalysisData } from './AnalysisResult';
 
 export const Hero = () => {
-    const [scanText, setScanText] = useState('Tap');
     const [isScannerOpen, setIsScannerOpen] = useState(false);
+    const [analysisData, setAnalysisData] = useState<AnalysisData | null>(null);
 
-    // Simple starfield effect
-    useEffect(() => {
-        const createStar = () => {
-            const star = document.createElement('div');
-            star.className = 'fixed rounded-full bg-white animate-pulse-slow';
-            star.style.width = Math.random() * 2 + 'px';
-            star.style.height = star.style.width;
-            star.style.top = Math.random() * 100 + 'vh';
-            star.style.left = Math.random() * 100 + 'vw';
-            star.style.opacity = Math.random() * 0.5 + '';
-            star.style.animationDuration = Math.random() * 3 + 2 + 's';
-            document.getElementById('star-container')?.appendChild(star);
-        };
+    const handleScan = (data: AnalysisData) => {
+        setAnalysisData(data);
+        setIsScannerOpen(false);
+    };
 
-        const container = document.getElementById('star-container');
-        if (container) container.innerHTML = '';
+    if (analysisData) {
+        return (
+            <div className="relative min-h-screen w-full bg-black overflow-y-auto">
+                {/* Re-use Galaxy Background for consistency */}
+                <div className="fixed inset-0 pointer-events-none z-0 bg-black overflow-hidden">
+                    <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[200vw] h-[200vw] opacity-20 animate-rotate-slow">
+                        <div className="absolute top-0 left-0 w-full h-full bg-[radial-gradient(ellipse_at_center,_var(--tw-gradient-stops))] from-purple-900/40 via-blue-900/20 to-transparent blur-3xl rounded-full" />
+                    </div>
+                </div>
 
-        for (let i = 0; i < 50; i++) {
-            createStar();
-        }
-    }, []);
-
-    // Typewriter effect
-    useEffect(() => {
-        const texts = ['Tap', 'Scan & Buy'];
-        let textIndex = 0;
-        let charIndex = 0;
-        let isDeleting = false;
-
-        const type = () => {
-            const currentText = texts[textIndex];
-
-            if (isDeleting) {
-                setScanText(currentText.substring(0, charIndex - 1));
-                charIndex--;
-
-                if (charIndex === 0) {
-                    isDeleting = false;
-                    textIndex = (textIndex + 1) % texts.length;
-                    setTimeout(type, 500);
-                    return;
-                }
-            } else {
-                setScanText(currentText.substring(0, charIndex + 1));
-                charIndex++;
-
-                if (charIndex === currentText.length) {
-                    isDeleting = true;
-                    setTimeout(type, 2000);
-                    return;
-                }
-            }
-
-            setTimeout(type, isDeleting ? 50 : 100);
-        };
-
-        const timer = setTimeout(type, 1000);
-        return () => clearTimeout(timer);
-    }, []);
+                <div className="relative z-10 pt-10">
+                    <AnalysisResult data={analysisData} onReset={() => setAnalysisData(null)} />
+                </div>
+            </div>
+        );
+    }
 
     return (
-        <div className="relative flex flex-col items-center justify-center min-h-full w-full max-w-4xl mx-auto px-4">
-            {/* Background Effects */}
-            <div id="star-container" className="fixed inset-0 pointer-events-none z-0" />
+        <div className="relative flex flex-col items-center justify-center h-screen w-full overflow-hidden">
+            {/* Galaxy Background Effects */}
+            <div className="fixed inset-0 pointer-events-none z-0 bg-black overflow-hidden">
+                {/* Rotating Galaxy Container */}
+                <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[200vw] h-[200vw] opacity-40 animate-rotate-slow">
+                    {/* Spiral Arms / Gradient Blobs */}
+                    <div className="absolute top-0 left-0 w-full h-full bg-[radial-gradient(ellipse_at_center,_var(--tw-gradient-stops))] from-purple-900/40 via-blue-900/20 to-transparent blur-3xl rounded-full" />
+                    <div className="absolute top-1/4 left-1/4 w-1/2 h-1/2 bg-[radial-gradient(ellipse_at_center,_var(--tw-gradient-stops))] from-pink-900/30 via-transparent to-transparent blur-2xl rounded-full transform rotate-45" />
+                    <div className="absolute bottom-1/4 right-1/4 w-1/3 h-1/3 bg-[radial-gradient(ellipse_at_center,_var(--tw-gradient-stops))] from-blue-600/20 via-transparent to-transparent blur-2xl rounded-full" />
+                </div>
 
-            {/* Content */}
-            <div className="z-10 flex flex-col items-center w-full space-y-12 fade-in-up">
+                {/* Stars/Particles Layer */}
+                <div className="absolute inset-0 z-0">
+                    <div className="absolute top-[20%] left-[10%] w-1 h-1 bg-white rounded-full animate-pulse opacity-80" style={{ animationDuration: '3s' }} />
+                    <div className="absolute top-[80%] left-[20%] w-1.5 h-1.5 bg-blue-200 rounded-full animate-pulse opacity-60" style={{ animationDuration: '4s' }} />
+                    <div className="absolute top-[15%] right-[25%] w-1 h-1 bg-white rounded-full animate-pulse opacity-70" style={{ animationDuration: '2.5s' }} />
+                    <div className="absolute top-[60%] right-[10%] w-2 h-2 bg-purple-200 rounded-full animate-pulse opacity-50" style={{ animationDuration: '5s' }} />
+                    <div className="absolute bottom-[30%] left-[50%] w-1 h-1 bg-white rounded-full animate-pulse opacity-90" style={{ animationDuration: '3.5s' }} />
+                </div>
 
+                {/* Floating Elements (Food/Tech) */}
+                <div className="absolute inset-0 pointer-events-none">
+                    <div className="absolute top-[15%] left-[15%] opacity-20 animate-float" style={{ animationDelay: '0s' }}>
+                        <Pizza className="w-12 h-12 text-orange-400 rotate-12" />
+                    </div>
+                    <div className="absolute top-[25%] right-[20%] opacity-20 animate-float" style={{ animationDelay: '2s' }}>
+                        <Smartphone className="w-10 h-10 text-blue-400 -rotate-12" />
+                    </div>
+                    <div className="absolute bottom-[20%] left-[25%] opacity-20 animate-float" style={{ animationDelay: '1s' }}>
+                        <Coffee className="w-10 h-10 text-brown-400 rotate-6" />
+                    </div>
+                </div>
+            </div>
+
+            {/* Main Content Area (Centered) */}
+            <div className="z-10 flex flex-col items-center space-y-10 fade-in-up mb-20 -mt-20">
                 {/* Logo Section */}
                 <div className="flex flex-col items-center gap-6 animate-fade-in">
                     <img
                         src="/logo.png"
                         alt="ClarioAI"
-                        className="w-24 h-24 md:w-32 md:h-32 object-contain drop-shadow-2xl"
+                        className="w-16 h-16 md:w-24 md:h-24 object-contain drop-shadow-2xl"
                     />
-                    <h1 className="text-4xl md:text-5xl font-bold tracking-tighter text-transparent bg-clip-text bg-gradient-to-b from-white to-white/50">
+                    <h1 className="text-3xl md:text-4xl font-bold tracking-tighter text-transparent bg-clip-text bg-gradient-to-b from-white to-white/50">
                         ClarioAI
                     </h1>
                 </div>
 
                 {/* Quick Actions */}
                 <div className="flex flex-wrap justify-center gap-3 w-full max-w-lg">
-                    <button className="flex items-center gap-2 px-4 py-2 rounded-full bg-white/5 border border-white/10 hover:bg-white/10 hover:border-accent/50 transition-all duration-300 group">
+                    <button className="flex items-center justify-center gap-2 px-4 py-2 rounded-full bg-white/5 border border-white/10 hover:bg-white/10 hover:border-accent/50 transition-all duration-300 group">
                         <Search className="w-4 h-4 text-accent group-hover:text-white transition-colors" />
                         <span className="text-sm font-medium text-secondary group-hover:text-white">DeepSearch</span>
                     </button>
-                    <button className="flex items-center gap-2 px-4 py-2 rounded-full bg-white/5 border border-white/10 hover:bg-white/10 hover:border-purple-500/50 transition-all duration-300 group">
+                    <button className="flex items-center justify-center gap-2 px-4 py-2 rounded-full bg-white/5 border border-white/10 hover:bg-white/10 hover:border-purple-500/50 transition-all duration-300 group">
                         <ImageIcon className="w-4 h-4 text-purple-500 group-hover:text-white transition-colors" />
                         <span className="text-sm font-medium text-secondary group-hover:text-white">Create Image</span>
                     </button>
-                    <button className="flex items-center gap-2 px-4 py-2 rounded-full bg-white/5 border border-white/10 hover:bg-white/10 hover:border-green-500/50 transition-all duration-300 group">
+                    <button className="flex items-center justify-center gap-2 px-4 py-2 rounded-full bg-white/5 border border-white/10 hover:bg-white/10 hover:border-green-500/50 transition-all duration-300 group">
                         <Zap className="w-4 h-4 text-green-500 group-hover:text-white transition-colors" />
                         <span className="text-sm font-medium text-secondary group-hover:text-white">Analyze Data</span>
                     </button>
                 </div>
+            </div>
 
-                {/* Scanner Interface - Smartphone Style */}
-                <div className="relative w-full max-w-xl mb-8 md:mb-12 px-4 md:px-0">
-                    <button
-                        onClick={() => setIsScannerOpen(true)}
-                        className="relative w-full group cursor-pointer"
-                    >
-                        {/* Main Card - Smartphone Shape */}
-                        <div className="relative card-slot-shape overflow-hidden">
-                            {/* Gradient Background - Blue fading to Black */}
-                            <div className="absolute inset-0 bg-gradient-to-b from-blue-900/90 via-blue-950/70 to-black"></div>
+            {/* Camera Scanner Modal */}
+            <CameraScanner isOpen={isScannerOpen} onClose={() => setIsScannerOpen(false)} onScan={handleScan} />
 
-                            <div className="relative px-3 py-6 sm:px-6 sm:py-10 md:px-8 md:py-12 lg:px-10 lg:py-16">
-                                {/* Blue Indicator Bars - Left Edge */}
-                                <div className="hidden sm:flex absolute left-4 sm:left-6 md:left-8 lg:left-10 top-[55%] -translate-y-1/2 flex-col gap-1.5 sm:gap-2.5 md:gap-3">
-                                    <div className="w-2 h-6 sm:w-3.5 sm:h-11 md:w-4 md:h-12 lg:w-5 lg:h-14 bg-gradient-to-r from-blue-500 to-blue-400 rounded-sm sm:rounded-md"></div>
-                                    <div className="w-2 h-5 sm:w-3.5 sm:h-8 md:w-4 md:h-9 lg:w-5 lg:h-11 bg-gradient-to-r from-blue-500 to-blue-400 rounded-sm sm:rounded-md"></div>
-                                    <div className="w-2 h-5 sm:w-3.5 sm:h-9 md:w-4 md:h-10 lg:w-5 lg:h-12 bg-gradient-to-r from-blue-500 to-blue-400 rounded-sm sm:rounded-md"></div>
-                                </div>
-
-                                {/* Blue Indicator Bars - Right Edge */}
-                                <div className="hidden sm:flex absolute right-4 sm:right-6 md:right-8 lg:right-10 top-[55%] -translate-y-1/2 flex-col gap-1.5 sm:gap-2.5 md:gap-3">
-                                    <div className="w-2 h-6 sm:w-3.5 sm:h-11 md:w-4 md:h-12 lg:w-5 lg:h-14 bg-gradient-to-r from-blue-500 to-blue-400 rounded-sm sm:rounded-md"></div>
-                                    <div className="w-2 h-5 sm:w-3.5 sm:h-8 md:w-4 md:h-9 lg:w-5 lg:h-11 bg-gradient-to-r from-blue-500 to-blue-400 rounded-sm sm:rounded-md"></div>
-                                    <div className="w-2 h-5 sm:w-3.5 sm:h-9 md:w-4 md:h-10 lg:w-5 lg:h-12 bg-gradient-to-r from-blue-500 to-blue-400 rounded-sm sm:rounded-md"></div>
-                                </div>
-
-                                {/* Center Dark Button */}
-                                <div className="relative mx-auto max-w-[240px] sm:max-w-xs md:max-w-sm">
-                                    <div className="bg-gradient-to-br from-gray-900 via-gray-950 to-black rounded-[2rem] sm:rounded-[2.5rem] md:rounded-[3rem] px-5 py-3 sm:px-8 sm:py-4 md:px-10 md:py-5 lg:px-14 lg:py-7 border border-gray-800/50 shadow-2xl">
-                                        <div className="flex items-center justify-center">
-                                            {/* Text with Typing Animation */}
-                                            <div className="relative">
-                                                <span className="text-xl sm:text-2xl md:text-3xl lg:text-4xl font-bold text-white tracking-wide typing-text">
-                                                    {scanText}
-                                                </span>
-                                                {/* Typing Cursor */}
-                                                <span className="typing-cursor text-xl sm:text-2xl md:text-3xl lg:text-4xl font-bold text-blue-400 ml-1">|</span>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </button>
-                </div>
-
-                {/* Camera Scanner Modal */}
-                <CameraScanner isOpen={isScannerOpen} onClose={() => setIsScannerOpen(false)} />
-
-                {/* ChatGPT-Style Input Box */}
-                <div className="relative w-full max-w-3xl">
-                    <div className="relative flex items-center gap-3 bg-surface/80 backdrop-blur-xl border border-white/10 rounded-full px-4 py-3 shadow-2xl hover:border-white/20 transition-all duration-300">
-                        {/* Plus Button - Left */}
+            {/* Fixed Bottom Search Bar */}
+            <div className="fixed bottom-0 left-0 right-0 p-6 z-20 flex justify-center bg-gradient-to-t from-black via-black/80 to-transparent pb-8 md:pb-10">
+                <div className="w-full max-w-3xl">
+                    <div className="relative flex items-center gap-3 bg-surface/90 backdrop-blur-xl border border-white/10 rounded-full px-4 py-3 shadow-2xl hover:border-white/20 transition-all duration-300 ring-1 ring-white/5">
+                        {/* Camera Button - Left */}
                         <button
+                            onClick={() => setIsScannerOpen(true)}
                             className="flex-shrink-0 w-8 h-8 rounded-full bg-white/5 hover:bg-white/10 flex items-center justify-center text-secondary hover:text-white transition-all duration-200"
-                            aria-label="Add attachment"
+                            aria-label="Open Camera"
                         >
-                            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
-                            </svg>
+                            <Camera className="w-5 h-5" />
                         </button>
 
                         {/* Text Input */}
                         <input
                             type="text"
-                            placeholder="Ask anything"
+                            placeholder="Ask anything..."
                             className="flex-1 bg-transparent border-none outline-none text-base md:text-lg text-white placeholder-gray-500 focus:outline-none"
                         />
 
                         {/* Right Side Buttons */}
                         <div className="flex items-center gap-2">
-                            {/* Voice Button */}
                             <button
                                 className="flex-shrink-0 w-8 h-8 rounded-full hover:bg-white/10 flex items-center justify-center text-secondary hover:text-white transition-all duration-200"
                                 aria-label="Voice input"
@@ -181,7 +127,6 @@ export const Hero = () => {
                                 <Mic className="w-5 h-5" />
                             </button>
 
-                            {/* Send Button */}
                             <button
                                 className="flex-shrink-0 w-8 h-8 rounded-full bg-white/10 hover:bg-white/20 flex items-center justify-center text-secondary hover:text-white transition-all duration-200"
                                 aria-label="Send message"
@@ -191,12 +136,11 @@ export const Hero = () => {
                         </div>
                     </div>
                 </div>
-
             </div>
 
-            {/* Footer Info */}
-            <div className="absolute bottom-8 text-center">
-                <p className="text-xs text-white/20">ClarioAI Model 2.0 • Designed for Excellence</p>
+            {/* Footer Info - Moved up slightly or hidden */}
+            <div className="absolute bottom-24 md:bottom-28 text-center w-full pointer-events-none">
+                <p className="text-[10px] text-white/20">ClarioAI Model 2.0</p>
             </div>
         </div>
     );
