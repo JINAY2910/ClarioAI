@@ -96,7 +96,7 @@ export const Hero = ({ onAnalysisComplete }: HeroProps) => {
             <div className="flex-[1.5] flex items-center justify-center">
                 <div className="text-center space-y-2 animate-fade-in max-w-2xl">
                     <div className="flex items-center justify-center gap-2">
-                        <Sparkles className="w-6 h-6 md:w-7 md:h-7 text-green-400" />
+                        <img src="/logo.png" alt="ClarioAI Logo" className="w-6 h-6 md:w-7 md:h-7 object-contain" />
                         <h1 className="text-2xl md:text-4xl font-bold text-white">ClarioAI</h1>
                     </div>
                     <p className="text-sm md:text-base text-white/60">
