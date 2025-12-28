@@ -1,8 +1,7 @@
 import { useState, useRef, useEffect } from 'react';
 import { createPortal } from 'react-dom';
-import { X, Zap, Image as ImageIcon } from 'lucide-react';
+import { X } from 'lucide-react';
 import type { AnalysisData } from './AnalysisResult';
-import { AlertCircle, CheckCircle2, HelpCircle } from 'lucide-react';
 
 interface CameraScannerProps {
     isOpen: boolean;
@@ -12,31 +11,17 @@ interface CameraScannerProps {
 
 // Mock Data for "Bournvita" / Generic Biscuit based on file names seen in public dir
 const MOCK_ANALYSIS: AnalysisData = {
-    intent: "Checking if this is actually healthy for kids",
-    productName: "Chocolate Health Drink / Biscuit",
-    insights: [
-        {
-            type: 'matter',
-            title: "Why it matters",
-            description: "You're likely looking for a growth supplement, but this product relies heavily on sugar for taste, which correlates with energy spikes rather than sustained nutrition.",
-            icon: AlertCircle,
-            color: "orange"
-        },
-        {
-            type: 'tradeoff',
-            title: "The Tradeoff",
-            description: "Contains fortified vitamins (Iron, Vitamin D), BUT the sugar content (nearly 40%) outweighs the micronutrient benefits for daily consumption.",
-            icon: CheckCircle2,
-            color: "blue"
-        },
-        {
-            type: 'uncertainty',
-            title: "What we don't know",
-            description: "The label mentions 'Natural Colors' but doesn't specify the source. Long-term impact of the specific flavor additives is not well-documented in this region.",
-            icon: HelpCircle,
-            color: "purple"
-        }
+    intent: "processed-concern",
+    intentLabel: "Processed Food Concern",
+    productName: "Chocolate Health Drink",
+    primaryInsight: "This product is marketed as a health booster, but it contains **nearly 40% sugar**. While it has **fortified vitamins** like Iron and Vitamin D, the sugar level makes it better suited as an **occasional option**, not a daily nutrition choice.",
+    summaryChips: [
+        { label: 'High sugar', color: 'red', emoji: '🔴' },
+        { label: 'Fortified vitamins', color: 'green', emoji: '🟢' },
+        { label: 'Use occasionally', color: 'amber', emoji: '🟡' }
     ],
+    whyItMatters: "Regular consumption of high-sugar products can create habits around sweet tastes and may affect your child's relationship with food over time.",
+    uncertaintyNote: "The label mentions 'Natural Colors' but doesn't specify the source. Long-term impact of the specific flavor additives is not well-documented.",
     summary: "While marketed as a health booster, the ingredient profile resembles a confectionary product. Proceed with moderation if sugar intake is a concern."
 };
 

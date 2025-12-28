@@ -1,8 +1,7 @@
 import { useState, useRef } from 'react';
-import { Upload, Keyboard, Mic, Scan, Sparkles } from 'lucide-react';
+import { Upload, Keyboard, Mic, Scan } from 'lucide-react';
 import { CameraScanner } from './CameraScanner';
 import { type AnalysisData } from './AnalysisResult';
-import { AlertTriangle, Leaf, HelpCircle } from 'lucide-react';
 
 interface HeroProps {
     onAnalysisComplete: (data: AnalysisData) => void;
@@ -16,32 +15,18 @@ export const Hero = ({ onAnalysisComplete }: HeroProps) => {
     // Mock analysis data generator
     const generateMockAnalysis = (productName: string): AnalysisData => {
         return {
-            intent: 'Health-conscious consumer seeking nutritional information',
+            intent: 'moderation',
+            intentLabel: 'Moderation',
             productName: productName,
-            insights: [
-                {
-                    type: 'matter',
-                    title: 'High in Added Sugars',
-                    description: 'Contains 18g of sugar per serving, which is 36% of the recommended daily intake.',
-                    icon: AlertTriangle,
-                    color: 'red'
-                },
-                {
-                    type: 'tradeoff',
-                    title: 'Good Source of Fiber',
-                    description: 'Provides 12g of dietary fiber, supporting digestive health.',
-                    icon: Leaf,
-                    color: 'green'
-                },
-                {
-                    type: 'uncertainty',
-                    title: 'Contains Artificial Ingredients',
-                    description: 'Some preservatives may cause sensitivity in certain individuals.',
-                    icon: HelpCircle,
-                    color: 'yellow'
-                }
+            primaryInsight: 'This product is marketed as healthy, but it is **very high in added sugar**. While it contains **fortified vitamins**, the sugar level makes it better suited as an **occasional option**, not a daily nutrition choice.',
+            summaryChips: [
+                { label: 'High sugar', color: 'red', emoji: '🔴' },
+                { label: 'Fortified vitamins', color: 'green', emoji: '🟢' },
+                { label: 'Use occasionally', color: 'amber', emoji: '🟡' }
             ],
-            summary: 'While this product offers good fiber content, the high sugar levels may be a concern for those monitoring their sugar intake. Consider alternatives with lower sugar content.'
+            whyItMatters: 'Regular consumption of high-sugar products can create habits around sweet tastes and may affect your relationship with food over time.',
+            uncertaintyNote: 'Some research around long-term effects varies. This guidance is based on general health consensus, not medical advice.',
+            summary: 'While this product offers good fiber content, the high sugar levels may be a concern for those monitoring their sugar intake.'
         };
     };
 
