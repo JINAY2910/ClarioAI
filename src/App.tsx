@@ -1,7 +1,8 @@
 import { useState } from 'react'
 import { Layout } from './components/Layout'
 import { Hero } from './components/Hero'
-import { AnalysisResult, type AnalysisData } from './components/AnalysisResult'
+import { AnalysisChat } from './components/AnalysisChat';
+import { type AnalysisData } from './components/AnalysisResult';
 import { AuthProvider } from './context/AuthContext'
 import { DataProvider } from './context/DataContext'
 
@@ -25,7 +26,7 @@ const AppContent = () => {
         return <Hero onAnalysisComplete={handleAnalysisComplete} />;
       case 'results':
         return analysisData ? (
-          <AnalysisResult data={analysisData} onReset={handleBackToHome} />
+          <AnalysisChat data={analysisData} onReset={handleBackToHome} />
         ) : (
           <div className="flex items-center justify-center h-full text-secondary">No analysis data</div>
         );
