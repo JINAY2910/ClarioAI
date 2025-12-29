@@ -6,7 +6,7 @@ import type { AnalysisData } from './AnalysisResult';
 interface CameraScannerProps {
     isOpen: boolean;
     onClose: () => void;
-    onScan: (data: AnalysisData) => void;
+    onScan: (data: AnalysisData | File) => void;
 }
 
 // Mock Data for "Bournvita" / Generic Biscuit based on file names seen in public dir
@@ -68,13 +68,32 @@ export const CameraScanner: React.FC<CameraScannerProps> = ({ isOpen, onClose, o
     };
 
     const handleCapture = () => {
+        if (!videoRef.current) return;
+
         setIsCapturing(true);
-        // Simulate processing delay
-        setTimeout(() => {
-            setIsCapturing(false);
-            onScan(MOCK_ANALYSIS);
-            onClose();
-        }, 1000);
+        const canvas = document.createElement('canvas');
+        canvas.width = videoRef.current.videoWidth;
+        canvas.height = videoRef.current.videoHeight;
+        const ctx = canvas.getContext('2d');
+
+        if (ctx) {
+            ctx.drawImage(videoRef.current, 0, 0);
+            canvas.toBlob((blob) => {
+                if (blob) {
+                    const file = new File([blob], "camera-capture.jpg", { type: "image/jpeg" });
+                    onScan(file);
+                    setTimeout(() => {
+                        setIsCapturing(false);
+                        onClose();
+                    }, 500); // Small delay for visual feedback
+                } else {
+                    setIsCapturing(false);
+                    // Fallback to mock if capture fails for some reason
+                    onScan(MOCK_ANALYSIS);
+                    onClose();
+                }
+            }, 'image/jpeg', 0.8);
+        }
     };
 
     const handleUploadClick = () => {
@@ -84,13 +103,8 @@ export const CameraScanner: React.FC<CameraScannerProps> = ({ isOpen, onClose, o
     const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
         const file = event.target.files?.[0];
         if (file) {
-            setIsCapturing(true);
-            // Simulate processing delay for upload
-            setTimeout(() => {
-                setIsCapturing(false);
-                onScan(MOCK_ANALYSIS);
-                onClose();
-            }, 1000);
+            onScan(file);
+            onClose();
         }
     };
 

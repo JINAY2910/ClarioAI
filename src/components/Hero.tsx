@@ -10,29 +10,30 @@ interface HeroProps {
 export const Hero = ({ onAnalysisComplete }: HeroProps) => {
     const [isScannerOpen, setIsScannerOpen] = useState(false);
     const [textInput, setTextInput] = useState('');
+    const [isAnalyzing, setIsAnalyzing] = useState(false);
     const fileInputRef = useRef<HTMLInputElement>(null);
 
-    // Mock analysis data generator
-    const generateMockAnalysis = (productName: string): AnalysisData => {
-        return {
-            intent: 'moderation',
-            intentLabel: 'Moderation',
-            productName: productName,
-            primaryInsight: 'This product is marketed as healthy, but it is **very high in added sugar**. While it contains **fortified vitamins**, the sugar level makes it better suited as an **occasional option**, not a daily nutrition choice.',
-            summaryChips: [
-                { label: 'High sugar', color: 'red', emoji: '🔴' },
-                { label: 'Fortified vitamins', color: 'green', emoji: '🟢' },
-                { label: 'Use occasionally', color: 'amber', emoji: '🟡' }
-            ],
-            whyItMatters: 'Regular consumption of high-sugar products can create habits around sweet tastes and may affect your relationship with food over time.',
-            uncertaintyNote: 'Some research around long-term effects varies. This guidance is based on general health consensus, not medical advice.',
-            summary: 'While this product offers good fiber content, the high sugar levels may be a concern for those monitoring their sugar intake.'
-        };
+    const handleAnalysis = async (file: File) => {
+        try {
+            setIsAnalyzing(true);
+            const { aiService } = await import('../services/ai');
+            const data = await aiService.analyzeImage(file);
+            onAnalysisComplete(data);
+        } catch (error) {
+            console.error(error);
+            alert('Failed to analyze image. Please ensure you have configured your API key.');
+        } finally {
+            setIsAnalyzing(false);
+        }
     };
 
-    const handleScan = (data: AnalysisData) => {
+    const handleScan = (dataOrFile: AnalysisData | File) => {
         setIsScannerOpen(false);
-        onAnalysisComplete(data);
+        if (dataOrFile instanceof File) {
+            handleAnalysis(dataOrFile);
+        } else {
+            onAnalysisComplete(dataOrFile);
+        }
     };
 
     const handleUpload = () => {
@@ -42,9 +43,7 @@ export const Hero = ({ onAnalysisComplete }: HeroProps) => {
     const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
         const file = event.target.files?.[0];
         if (file) {
-            // Generate mock analysis based on uploaded file
-            const mockData = generateMockAnalysis(`Uploaded Product: ${file.name}`);
-            onAnalysisComplete(mockData);
+            handleAnalysis(file);
         }
     };
 
@@ -52,9 +51,24 @@ export const Hero = ({ onAnalysisComplete }: HeroProps) => {
         console.log('Voice input clicked');
     };
 
-    const handleTextSubmit = () => {
+    const handleTextSubmit = async () => {
         if (textInput.trim()) {
-            const mockData = generateMockAnalysis(textInput);
+            // For now, text search remains mock or we could implement a text-only Gemini call
+            // But the user focused on Image upload. We'll keep the mock for text for stability unless requested.
+            // Actually, let's keep the mock generator for TEXT input as fallback/demo
+            const mockData: AnalysisData = {
+                intent: 'moderation',
+                intentLabel: 'Analysis',
+                productName: textInput,
+                primaryInsight: 'Text analysis is currently a **preview feature**. Please upload an image for full **ingredient analysis**.',
+                summaryChips: [
+                    { label: 'Text Search', color: 'amber', emoji: '🔍' },
+                    { label: 'Limited Data', color: 'red', emoji: '⚠️' },
+                    { label: 'Try Image', color: 'green', emoji: '📸' }
+                ],
+                whyItMatters: 'Image analysis allows us to read the exact ingredient list on the package.',
+                summary: 'Please upload an image for a complete analysis.'
+            };
             onAnalysisComplete(mockData);
             setTextInput('');
         }
@@ -64,6 +78,14 @@ export const Hero = ({ onAnalysisComplete }: HeroProps) => {
         <div className="relative flex flex-col h-screen w-full bg-black px-4 md:px-6">
             {/* Camera Scanner Modal */}
             <CameraScanner isOpen={isScannerOpen} onClose={() => setIsScannerOpen(false)} onScan={handleScan} />
+
+            {/* Loading Overlay */}
+            {isAnalyzing && (
+                <div className="absolute inset-0 z-50 bg-black/80 backdrop-blur-sm flex items-center justify-center flex-col gap-4 animate-fade-in">
+                    <div className="w-16 h-16 rounded-full border-4 border-emerald-500/30 border-t-emerald-500 animate-spin"></div>
+                    <p className="text-white/80 font-medium animate-pulse">Analyzing ingredients...</p>
+                </div>
+            )}
 
             {/* Hidden file input */}
             <input
@@ -114,7 +136,8 @@ export const Hero = ({ onAnalysisComplete }: HeroProps) => {
                         {/* Upload Button - Left */}
                         <button
                             onClick={handleUpload}
-                            className="flex flex-col items-center justify-center gap-2 md:gap-3 p-4 md:p-6 rounded-2xl bg-white/5 border border-white/10 hover:border-white/20 hover:bg-white/10 transition-all duration-300 hover:scale-105 group"
+                            disabled={isAnalyzing}
+                            className="flex flex-col items-center justify-center gap-2 md:gap-3 p-4 md:p-6 rounded-2xl bg-white/5 border border-white/10 hover:border-white/20 hover:bg-white/10 transition-all duration-300 hover:scale-105 group disabled:opacity-50 disabled:cursor-not-allowed"
                         >
                             <div className="w-10 h-10 md:w-12 md:h-12 rounded-full bg-blue-500/20 flex items-center justify-center group-hover:bg-blue-500/30 transition-colors">
                                 <Upload className="w-5 h-5 md:w-6 md:h-6 text-blue-400" />
@@ -125,7 +148,8 @@ export const Hero = ({ onAnalysisComplete }: HeroProps) => {
                         {/* Scan Button - Center */}
                         <button
                             onClick={() => setIsScannerOpen(true)}
-                            className="flex flex-col items-center justify-center gap-2 md:gap-3 p-4 md:p-6 rounded-2xl bg-gradient-to-br from-green-500/20 to-emerald-600/20 border border-green-500/30 hover:border-green-400/50 hover:from-green-500/30 hover:to-emerald-600/30 transition-all duration-300 hover:scale-105 group"
+                            disabled={isAnalyzing}
+                            className="flex flex-col items-center justify-center gap-2 md:gap-3 p-4 md:p-6 rounded-2xl bg-gradient-to-br from-green-500/20 to-emerald-600/20 border border-green-500/30 hover:border-green-400/50 hover:from-green-500/30 hover:to-emerald-600/30 transition-all duration-300 hover:scale-105 group disabled:opacity-50 disabled:cursor-not-allowed"
                         >
                             <div className="w-10 h-10 md:w-12 md:h-12 rounded-full bg-green-500/20 flex items-center justify-center group-hover:bg-green-500/30 transition-colors">
                                 <Scan className="w-5 h-5 md:w-6 md:h-6 text-green-400" />
@@ -136,7 +160,8 @@ export const Hero = ({ onAnalysisComplete }: HeroProps) => {
                         {/* Voice Button - Right */}
                         <button
                             onClick={handleVoiceInput}
-                            className="flex flex-col items-center justify-center gap-2 md:gap-3 p-4 md:p-6 rounded-2xl bg-white/5 border border-white/10 hover:border-white/20 hover:bg-white/10 transition-all duration-300 hover:scale-105 group"
+                            disabled={isAnalyzing}
+                            className="flex flex-col items-center justify-center gap-2 md:gap-3 p-4 md:p-6 rounded-2xl bg-white/5 border border-white/10 hover:border-white/20 hover:bg-white/10 transition-all duration-300 hover:scale-105 group disabled:opacity-50 disabled:cursor-not-allowed"
                         >
                             <div className="w-10 h-10 md:w-12 md:h-12 rounded-full bg-purple-500/20 flex items-center justify-center group-hover:bg-purple-500/30 transition-colors">
                                 <Mic className="w-5 h-5 md:w-6 md:h-6 text-purple-400" />
