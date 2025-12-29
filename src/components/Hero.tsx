@@ -75,7 +75,7 @@ export const Hero = ({ onAnalysisComplete }: HeroProps) => {
     };
 
     return (
-        <div className="relative flex flex-col h-screen w-full bg-black px-4 md:px-6">
+        <div className="relative flex flex-col h-full w-full bg-black px-4 md:px-6">
             {/* Camera Scanner Modal */}
             <CameraScanner isOpen={isScannerOpen} onClose={() => setIsScannerOpen(false)} onScan={handleScan} />
 

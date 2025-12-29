@@ -54,15 +54,9 @@ export const AnalysisResult: React.FC<AnalysisResultProps> = ({ data }) => {
 
     return (
         <div className="relative w-full">
-            <div className="relative z-10 px-6 py-8">
+            <div className="relative z-10 px-6 pb-8 pt-32">
                 {/* Header */}
-                <div className="mb-10 text-center">
-                    <div className="inline-flex items-center justify-center p-3 mb-4 rounded-2xl bg-white/5 border border-white/5 backdrop-blur-xl shadow-2xl">
-                        <div className="w-8 h-8 rounded-full bg-gradient-to-tr from-emerald-400 to-blue-500"></div>
-                    </div>
-                    <h1 className="text-3xl font-extrabold text-transparent bg-clip-text bg-gradient-to-b from-white to-white/60 tracking-tight">Clario</h1>
-                    <p className="text-xs font-medium text-white/40 tracking-[0.2em] uppercase mt-2">AI Nutrition Analysis</p>
-                </div>
+                {/* Header Removed as per user request */}
 
                 {/* Hero Card */}
                 <div className={`relative overflow-hidden rounded-[32px] p-1 bg-gradient-to-b from-white/10 to-transparent mb-8 transition-all duration-500 hover:scale-[1.01]`}>

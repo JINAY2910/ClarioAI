@@ -59,7 +59,7 @@ export const AnalysisChat: React.FC<AnalysisChatProps> = ({ data, onReset }) => 
     };
 
     return (
-        <div className="flex flex-col h-screen w-full bg-black relative overflow-hidden font-sans text-primary selection:bg-emerald-500/30">
+        <div className="flex flex-col h-full w-full bg-black relative overflow-hidden font-sans text-primary selection:bg-emerald-500/30">
             {/* Ambient Background Effects */}
             <div className="absolute top-[-10%] right-[-10%] w-[500px] h-[500px] bg-emerald-500/10 rounded-full blur-[120px] pointer-events-none" />
             <div className="absolute bottom-[-10%] left-[-10%] w-[500px] h-[500px] bg-blue-500/10 rounded-full blur-[120px] pointer-events-none" />
@@ -86,16 +86,16 @@ export const AnalysisChat: React.FC<AnalysisChatProps> = ({ data, onReset }) => 
                                         className={`flex gap-3 ${msg.role === 'user' ? 'flex-row-reverse' : 'flex-row'}`}
                                     >
                                         <div className={`w-8 h-8 rounded-full flex items-center justify-center flex-shrink-0 backdrop-blur-md shadow-lg ${msg.role === 'assistant'
-                                                ? 'bg-gradient-to-tr from-emerald-500/20 to-blue-600/20 border border-white/10 text-emerald-400'
-                                                : 'bg-white/5 border border-white/5 text-white/80'
+                                            ? 'bg-gradient-to-tr from-emerald-500/20 to-blue-600/20 border border-white/10 text-emerald-400'
+                                            : 'bg-white/5 border border-white/5 text-white/80'
                                             }`}>
                                             {msg.role === 'assistant' ? <Sparkles size={14} fill="currentColor" className="opacity-80" /> : <User size={14} />}
                                         </div>
 
                                         <div className={`flex flex-col max-w-[85%] ${msg.role === 'user' ? 'items-end' : 'items-start'}`}>
                                             <div className={`px-5 py-3.5 text-[15px] leading-relaxed shadow-sm backdrop-blur-md transition-all duration-300 ${msg.role === 'assistant'
-                                                    ? 'bg-gradient-to-b from-white/10 to-white/5 border border-white/10 rounded-2xl rounded-tl-none text-white/90'
-                                                    : 'bg-white text-black font-medium rounded-2xl rounded-tr-none'
+                                                ? 'bg-gradient-to-b from-white/10 to-white/5 border border-white/10 rounded-2xl rounded-tl-none text-white/90'
+                                                : 'bg-white text-black font-medium rounded-2xl rounded-tr-none'
                                                 }`}>
                                                 {msg.content}
                                             </div>
@@ -126,7 +126,7 @@ export const AnalysisChat: React.FC<AnalysisChatProps> = ({ data, onReset }) => 
             </div>
 
             {/* Floating Input Dock */}
-            <div className="absolute bottom-0 left-0 right-0 z-20 pb-6 pt-24 px-4 bg-gradient-to-t from-black via-black/80 to-transparent pointer-events-none">
+            <div className="absolute bottom-0 left-0 right-0 z-20 pb-2 pt-24 px-4 bg-gradient-to-t from-black via-black/80 to-transparent pointer-events-none">
                 <div className="max-w-xl mx-auto w-full pointer-events-auto">
                     <div className="backdrop-blur-xl bg-white/10 border border-white/10 rounded-[28px] p-1.5 shadow-2xl shadow-black/50 ring-1 ring-white/5 transform transition-all hover:bg-white/[0.12] hover:scale-[1.01]">
                         <Input onSend={handleSend} />
@@ -134,7 +134,7 @@ export const AnalysisChat: React.FC<AnalysisChatProps> = ({ data, onReset }) => 
 
                     <button
                         onClick={onReset}
-                        className="w-full text-center mt-4 text-[11px] font-semibold tracking-widest text-white/30 hover:text-white/60 transition-colors uppercase py-2 cursor-pointer"
+                        className="w-full text-center mt-2 text-[11px] font-semibold tracking-widest text-white/30 hover:text-white/60 transition-colors uppercase py-1 cursor-pointer"
                     >
                         Start New Scan
                     </button>
