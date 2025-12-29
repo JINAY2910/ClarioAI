@@ -4,15 +4,20 @@ import { type AnalysisData } from "../components/AnalysisResult";
 const API_KEY = import.meta.env.VITE_GEMINI_API_KEY;
 
 export class GeminiService {
-    private genAI: GoogleGenerativeAI;
-    private model: any;
+    private genAI?: GoogleGenerativeAI;
+    private model?: any;
 
     constructor() {
         if (!API_KEY) {
-            console.warn("Gemini API Key is missing!");
+            console.warn("Gemini API Key is missing! AI features will be disabled.");
+            return;
         }
-        this.genAI = new GoogleGenerativeAI(API_KEY);
-        this.model = this.genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
+        try {
+            this.genAI = new GoogleGenerativeAI(API_KEY);
+            this.model = this.genAI.getGenerativeModel({ model: "gemma-3-27b-it" });
+        } catch (error) {
+            console.error("Failed to initialize Gemini AI:", error);
+        }
     }
 
     private async fileToGenerativePart(file: File): Promise<{ inlineData: { data: string; mimeType: string } }> {
@@ -35,8 +40,8 @@ export class GeminiService {
     }
 
     async analyzeImage(file: File): Promise<AnalysisData> {
-        if (!API_KEY) {
-            throw new Error("Gemini API Key is not configured. Please add VITE_GEMINI_API_KEY to your .env file.");
+        if (!this.model) {
+            throw new Error("Gemini API Key is not configured or initialization failed. Please check your .env file.");
         }
 
         const imagePart = await this.fileToGenerativePart(file);
