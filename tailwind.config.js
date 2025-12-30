@@ -7,8 +7,8 @@ export default {
   theme: {
     extend: {
       colors: {
-        background: '#0b0f0e',
-        surface: '#111111',
+        background: '#09090b',
+        surface: '#121214',
         primary: '#f5f5f5',
         secondary: '#a3a3a3',
         accent: '#3b82f6',
@@ -25,6 +25,13 @@ export default {
       },
       animation: {
         'pulse-slow': 'pulse 4s cubic-bezier(0.4, 0, 0.6, 1) infinite',
+        'spin-reverse': 'spin-reverse 1s linear infinite',
+      },
+      keyframes: {
+        'spin-reverse': {
+          from: { transform: 'rotate(360deg)' },
+          to: { transform: 'rotate(0deg)' },
+        },
       },
       boxShadow: {
         'glow-green': '0 0 20px rgba(16, 185, 129, 0.3)',

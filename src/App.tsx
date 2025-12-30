@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { Layout } from './components/Layout'
-import { Hero } from './components/Hero'
+import { Homepage } from './components/Homepage'
 import { AnalysisChat } from './components/AnalysisChat';
 import { type AnalysisData } from './components/AnalysisResult';
 import { AuthProvider } from './context/AuthContext'
@@ -23,7 +23,7 @@ const AppContent = () => {
   const renderContent = () => {
     switch (activeTab) {
       case 'home':
-        return <Hero onAnalysisComplete={handleAnalysisComplete} />;
+        return <Homepage onAnalysisComplete={handleAnalysisComplete} />;
       case 'results':
         return analysisData ? (
           <AnalysisChat data={analysisData} onReset={handleBackToHome} />
@@ -35,7 +35,7 @@ const AppContent = () => {
       case 'settings':
         return <div className="flex items-center justify-center h-full text-secondary">Settings Unavailable</div>;
       default:
-        return <Hero onAnalysisComplete={handleAnalysisComplete} />;
+        return <Homepage onAnalysisComplete={handleAnalysisComplete} />;
     }
   };
 
