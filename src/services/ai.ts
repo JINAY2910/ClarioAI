@@ -88,6 +88,37 @@ export class GeminiService {
             throw new Error("Failed to analyze image. Please try again.");
         }
     }
+    async analyzeStreamFrame(file: File, userPrompt?: string): Promise<string> {
+        if (!this.model) {
+            throw new Error("Gemini Not Initialized");
+        }
+
+        const imagePart = await this.fileToGenerativePart(file);
+
+        let prompt = `
+            You are a quick nutrition assistant. Look at this product/food.
+            In ONE short conversational sentence (max 15 words), tell me if I should eat it or avoid it and why.
+        `;
+
+        if (userPrompt) {
+            prompt = `
+                User said: "${userPrompt}"
+                Look at the image and answer the user's question.
+                IMPORTANT: Detect the language of the user's question (e.g., Hindi, Gujarati, English).
+                Reply IN THE SAME LANGUAGE as the user's question.
+                Keep it short and conversational (max 1 sentence).
+            `;
+        }
+
+        try {
+            const result = await this.model.generateContent([prompt, imagePart]);
+            const response = await result.response;
+            return response.text();
+        } catch (error) {
+            console.error("Stream Analysis Failed:", error);
+            return "";
+        }
+    }
 }
 
 export const aiService = new GeminiService();
