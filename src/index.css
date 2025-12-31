@@ -8,6 +8,12 @@
   }
 }
 
+::selection {
+  background-color: #ffffff !important;
+  color: #000000 !important;
+  -webkit-text-fill-color: #000000 !important;
+}
+
 /* Custom Utilities for Glassmorphism if needed */
 .glass {
   background: rgba(255, 255, 255, 0.03);
