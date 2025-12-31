@@ -46,33 +46,33 @@ export class GeminiService {
 
         const imagePart = await this.fileToGenerativePart(file);
 
+        // AI-Native Prompt: Intent-First & Reasoning-Driven
         const prompt = `
-      Analyze this food product image and provide a nutritional assessment in STRICT JSON format. 
-      Do not include any markdown formatting (like \`\`\`json). Just return the raw JSON object.
-      
-      The JSON must match this structure:
-      {
-        "intent": "moderation" | "general-health" | "processed-concern",
-        "intentLabel": "string (e.g., 'Moderation Needed', 'Healthy Choice', 'Highly Processed')",
-        "productName": "string (identified product name)",
-        "primaryInsight": "string (A detailed insight text with key phrases wrapped in double asterisks **like this** for highlighting. e.g., 'This product is **high in sugar**...')",
-        "summaryChips": [
-          {
-            "label": "string",
-            "color": "green" | "amber" | "red",
-            "emoji": "string (single emoji)"
-          }
-        ],
-        "whyItMatters": "string (educational context)",
-        "uncertaintyNote": "string (optional warning if unclear)",
-        "summary": "string (brief summary)"
-      }
+            ROLE: AI-Native Nutrition Co-pilot.
+            GOAL: Reduce cognitive load for the user at the moment of decision.
+            INPUT: Food product image.
+            
+            CORE PRINCIPLES:
+            1. **Intent-First**: Infer *why* the user is scanning. (e.g., "Is this a healthy snack?", "Is this safe?", "Is it better than X?").
+            2. **Reasoning-Driven**: Don't just list facts. Explain *why* it matters. (e.g., instead of "12g Sugar", say "The 12g of sugar makes this more of a dessert than a daily snack").
+            3. **Honest Uncertainty**: If you cannot see the label or are unsure, explicitly state it in 'uncertaintyNote'.
+            4. **Co-Pilot Persona**: Speak as a helpful, intelligent partner, not a database.
 
-      analysis rules:
-      - intent: 'green' for healthy/natural, 'moderation' for okay but watch out, 'processed-concern' for unhealthy/ultra-processed.
-      - Highlight key nutritional facts in primaryInsight using **bold**.
-      - Provide 3 summary chips total.
-    `;
+            OUTPUT FORMAT: STRICT JSON (No Markdown).
+            Structure:
+            {
+                "intent": "moderation" | "general-health" | "processed-concern",
+                "intentLabel": "string (e.g., 'Treat Wisely', 'Nutrient Dense', 'Ultra-Processed')",
+                "productName": "string (Identified Name)",
+                "primaryInsight": "string (The ONE most important thing the user needs to know. Use **bold** for impact. e.g. '**High Sugar** but excellent **Protein source**.')",
+                "summaryChips": [
+                    { "label": "string (e.g. 'High Protein')", "color": "green"| "amber"| "red", "emoji": "string" }
+                ],
+                "whyItMatters": "string (Educational reasoning: 'Unlike regular chips, these use lentil flour which lowers the glycemic index...')",
+                "uncertaintyNote": "string (ONLY if image is blurry or data is missing: 'I couldn't read the sodium count clearly...')",
+                "summary": "string (Brief, conversational verdict)"
+            }
+        `;
 
         try {
             const result = await this.model.generateContent([prompt, imagePart]);
@@ -88,6 +88,7 @@ export class GeminiService {
             throw new Error("Failed to analyze image. Please try again.");
         }
     }
+
     async analyzeStreamFrame(file: File, userPrompt?: string): Promise<string> {
         if (!this.model) {
             throw new Error("Gemini Not Initialized");
@@ -117,6 +118,52 @@ export class GeminiService {
         } catch (error) {
             console.error("Stream Analysis Failed:", error);
             return "";
+        }
+    }
+
+    async chat(history: { role: 'user' | 'assistant'; content: string }[], productContext: AnalysisData, currentMessage: string): Promise<string> {
+        if (!this.model) {
+            throw new Error("Gemini Not Initialized");
+        }
+
+        const contextPrompt = `
+            SYSTEM INSTRUCTION:
+            You are an "AI-Native Consumer Health Co-pilot".
+            You are NOT a database lookup tool. You are an intelligent reasoning engine.
+            
+            YOUR MISSION:
+            1. **Infer Intent**: Understand what the user is *really* asking (e.g., "Is this safe?" usually means "Will this hurt my goals?").
+            2. **Reduce Cognitive Load**: Don't dump data. Synthesize it into a clear decision or trade-off.
+            3. **Be Human**: Use a "Skilled Product Designer" persona—warm, empathetic, and clear.
+            4. **Honest Uncertainty**: If you don't know, say so. Don't hallucinate.
+
+            CONTEXT:
+            Product: ${productContext.productName}
+            Verdict: ${productContext.intentLabel}
+            Key Insight: ${productContext.primaryInsight}
+            Reasoning: ${productContext.whyItMatters}
+            
+            CONVERSATION HISTORY:
+            ${history.map(msg => `${msg.role.toUpperCase()}: ${msg.content}`).join('\n')}
+
+            USER'S QUESTION:
+            "${currentMessage}"
+
+            RESPONSE GUIDELINES:
+            - Language: Reply in the SAME language as the user's question.
+            - Length: Concise (2-3 sentences max) unless detailed explanation is requested.
+            - Style: Conversational, helpful, and reasoning-driven.
+        `;
+
+        try {
+            // Note: For a proper chat session we should use startChat(), but for this stateless implementation 
+            // passing the full history in the prompt is a robust simple solution for now.
+            const result = await this.model.generateContent(contextPrompt);
+            const response = await result.response;
+            return response.text();
+        } catch (error) {
+            console.error("Chat Error:", error);
+            return "I'm having a bit of trouble connecting right now. Could you ask that again?";
         }
     }
 }

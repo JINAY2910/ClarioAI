@@ -3,6 +3,8 @@ import { AnalysisResult, type AnalysisData } from './AnalysisResult';
 import { Input } from './Input';
 import { Bot, User, Sparkles } from 'lucide-react';
 
+import { aiService } from '../services/ai';
+
 interface AnalysisChatProps {
     data: AnalysisData;
     onReset: () => void;
@@ -35,27 +37,40 @@ export const AnalysisChat: React.FC<AnalysisChatProps> = ({ data, onReset }) => 
             content: text,
             timestamp: Date.now()
         };
-        setMessages(prev => [...prev, userMsg]);
+
+        // Optimistic update
+        const updatedHistory = [...messages, userMsg];
+        setMessages(updatedHistory);
         setIsTyping(true);
 
-        setTimeout(() => {
+        try {
+            // Prepare history for AI service (exclude the current new message as we pass it explicitly)
+            const historyForAi = messages.map(m => ({
+                role: m.role,
+                content: m.content
+            }));
+
+            const responseText = await aiService.chat(historyForAi, data, text);
+
             const aiMsg: Message = {
                 id: (Date.now() + 1).toString(),
                 role: 'assistant',
-                content: generateMockResponse(text),
+                content: responseText,
                 timestamp: Date.now()
             };
             setMessages(prev => [...prev, aiMsg]);
+        } catch (error) {
+            console.error("Chat failure:", error);
+            const errorMsg: Message = {
+                id: (Date.now() + 1).toString(),
+                role: 'assistant',
+                content: "I'm having trouble connecting to the nutrition database right now. Please try again.",
+                timestamp: Date.now()
+            };
+            setMessages(prev => [...prev, errorMsg]);
+        } finally {
             setIsTyping(false);
-        }, 2000);
-    };
-
-    const generateMockResponse = (query: string): string => {
-        const lowerQuery = query.toLowerCase();
-        if (lowerQuery.includes('sugar')) {
-            return "The sugar content is high (approx. 40%), which is the main concern here. This accounts for a large portion of the daily recommended limit. Would you like a low-sugar recommendation?";
         }
-        return "That's a great question. Based on the ingredients, Clario suggests looking at the overall balance. Is there a specific ingredient you want to know more about?";
     };
 
     return (
