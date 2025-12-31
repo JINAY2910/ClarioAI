@@ -1,7 +1,8 @@
-import { useState, useRef } from 'react';
-import { Camera, ArrowUp, Sparkles, ScanLine, Mic } from 'lucide-react';
+import { useState, useRef, useEffect } from 'react';
+import { Camera, ArrowUp, Sparkles, ScanLine, Mic, Eye } from 'lucide-react';
 import { CameraScanner } from './CameraScanner';
 import { type AnalysisData } from './AnalysisResult';
+import { startListening, stopListening, isSpeechSupported } from '../services/speech';
 
 interface HomepageProps {
     onAnalysisComplete: (data: AnalysisData) => void;
@@ -9,9 +10,51 @@ interface HomepageProps {
 
 export const Homepage = ({ onAnalysisComplete }: HomepageProps) => {
     const [isScannerOpen, setIsScannerOpen] = useState(false);
+    const [startInLiveMode, setStartInLiveMode] = useState(false);
     const [textInput, setTextInput] = useState('');
+    const [interimText, setInterimText] = useState('');
+    const [isListening, setIsListening] = useState(false);
     const [isAnalyzing, setIsAnalyzing] = useState(false);
     const fileInputRef = useRef<HTMLInputElement>(null);
+
+    useEffect(() => {
+        if (isListening) {
+            startListening(
+                (transcript, isFinal) => {
+                    if (isFinal) {
+                        setTextInput((prev) => {
+                            const separator = prev.length > 0 ? ' ' : '';
+                            return prev + separator + transcript;
+                        });
+                        setInterimText('');
+                    } else {
+                        setInterimText(transcript);
+                    }
+                },
+                () => {
+                    setIsListening(false);
+                    setInterimText('');
+                },
+                (error) => {
+                    console.error("Voice input error:", error);
+                    setIsListening(false);
+                    setInterimText('');
+                    if (error === 'not-allowed') {
+                        alert("Microphone access denied. Please enable permissions.");
+                    } else if (error !== 'no-speech') {
+                        alert(`Voice Error: ${error}`);
+                    }
+                }
+            );
+        } else {
+            stopListening();
+            setInterimText('');
+        }
+
+        return () => {
+            stopListening();
+        };
+    }, [isListening]);
 
     const handleAnalysis = async (file: File) => {
         try {
@@ -29,11 +72,22 @@ export const Homepage = ({ onAnalysisComplete }: HomepageProps) => {
 
     const handleScan = (dataOrFile: AnalysisData | File) => {
         setIsScannerOpen(false);
+        setStartInLiveMode(false); // Reset
         if (dataOrFile instanceof File) {
             handleAnalysis(dataOrFile);
         } else {
             onAnalysisComplete(dataOrFile);
         }
+    };
+
+    const handleNormalScanClick = () => {
+        setStartInLiveMode(false);
+        setIsScannerOpen(true);
+    };
+
+    const handleLiveVisionClick = () => {
+        setStartInLiveMode(true);
+        setIsScannerOpen(true);
     };
 
     const handleUpload = () => {
@@ -48,11 +102,12 @@ export const Homepage = ({ onAnalysisComplete }: HomepageProps) => {
     };
 
     const handleTextSubmit = async () => {
-        if (textInput.trim()) {
+        const fullText = (textInput + (interimText ? ' ' + interimText : '')).trim();
+        if (fullText) {
             const mockData: AnalysisData = {
                 intent: 'moderation',
                 intentLabel: 'Analysis',
-                productName: textInput,
+                productName: fullText,
                 primaryInsight: 'Text analysis is currently a **preview feature**. Please upload an image for full **ingredient analysis**.',
                 summaryChips: [
                     { label: 'Text Search', color: 'amber', emoji: '🔍' },
@@ -64,7 +119,18 @@ export const Homepage = ({ onAnalysisComplete }: HomepageProps) => {
             };
             onAnalysisComplete(mockData);
             setTextInput('');
+            setInterimText('');
         }
+    };
+
+    const toggleVoice = () => {
+        if (!isListening) {
+            if (!isSpeechSupported()) {
+                alert("Voice typing is not supported in this browser. Please use Chrome, Edge, or Safari.");
+                return;
+            }
+        }
+        setIsListening(!isListening);
     };
 
     return (
@@ -73,7 +139,15 @@ export const Homepage = ({ onAnalysisComplete }: HomepageProps) => {
 
 
             {/* Camera Scanner Modal */}
-            <CameraScanner isOpen={isScannerOpen} onClose={() => setIsScannerOpen(false)} onScan={handleScan} />
+            {/* Camera Scanner Modal */}
+            {isScannerOpen && (
+                <CameraScanner
+                    isOpen={isScannerOpen}
+                    onClose={() => setIsScannerOpen(false)}
+                    onScan={handleScan}
+                    initialLiveMode={startInLiveMode}
+                />
+            )}
 
             {/* Loading Overlay */}
             {isAnalyzing && (
@@ -117,7 +191,7 @@ export const Homepage = ({ onAnalysisComplete }: HomepageProps) => {
                     </div>
 
                     {/* 2. AI "Alive" State */}
-                    <div className="mb-8 animate-fade-in" style={{ animationDelay: '0.1s' }}>
+                    <div className="mb-8 animate-fade-in flex gap-3" style={{ animationDelay: '0.1s' }}>
                         <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-white/5 border border-white/10 backdrop-blur-md">
                             <span className="relative flex h-2 w-2">
                                 <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
@@ -125,14 +199,20 @@ export const Homepage = ({ onAnalysisComplete }: HomepageProps) => {
                             </span>
                             <span className="text-xs font-medium text-white/70 tracking-wide">AI Co-Pilot Active</span>
                         </div>
+
+                        {/* 4. Soft Status Indicator */}
+                        <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-emerald-500/10 border border-emerald-500/20 backdrop-blur-md">
+                            <Eye size={10} className="text-emerald-400" />
+                            <span className="text-xs font-medium text-emerald-400/90 tracking-wide">Live Vision Ready</span>
+                        </div>
                     </div>
 
                     {/* Desktop Layout Split */}
                     <div className="w-full grid grid-cols-1 md:grid-cols-2 md:gap-6">
-                        {/* 3. Primary Action - Decision Moment */}
+                        {/* 3. Primary Action - Check a Product */}
                         <button
-                            onClick={() => setIsScannerOpen(true)}
-                            className="w-full bg-white/5 border border-white/10 rounded-3xl p-6 text-left hover:bg-white/10 hover:border-white/20 transition-all duration-300 group mb-3 md:mb-0 animate-fade-in h-auto min-h-[140px] md:h-full flex flex-row md:flex-col md:justify-between items-center md:items-start gap-4 md:gap-0"
+                            onClick={handleNormalScanClick}
+                            className="w-full bg-white/5 border border-emerald-500/20 rounded-3xl p-6 text-left hover:bg-white/10 hover:border-emerald-500/40 transition-all duration-300 group mb-3 md:mb-0 animate-fade-in h-auto min-h-[140px] md:h-full flex flex-row md:flex-col md:justify-between items-center md:items-start gap-4 md:gap-0"
                             style={{ animationDelay: '0.2s' }}
                         >
                             <div className="flex items-start justify-between shrink-0 w-auto md:w-full">
@@ -149,24 +229,41 @@ export const Homepage = ({ onAnalysisComplete }: HomepageProps) => {
                             </div>
                         </button>
 
-                        {/* 4. Live AI Preview */}
-                        <div className="w-full bg-neutral-900/50 border border-white/5 rounded-3xl p-4 md:p-6 mb-3 md:mb-0 animate-fade-in h-auto md:h-full flex flex-col justify-center" style={{ animationDelay: '0.3s' }}>
-                            <div className="flex items-center gap-2 mb-2 md:mb-3">
-                                <span className="text-xs font-medium text-emerald-500 uppercase tracking-wider">Example Insight</span>
+                        {/* 1. New Live Vision Card */}
+                        <button
+                            onClick={handleLiveVisionClick}
+                            className="w-full bg-white/5 border border-emerald-500/20 rounded-3xl p-6 text-left hover:bg-white/10 hover:border-emerald-500/40 transition-all duration-300 group mb-3 md:mb-0 animate-fade-in h-auto min-h-[140px] md:h-full flex flex-row md:flex-col md:justify-between items-center md:items-start gap-4 md:gap-0 relative overflow-hidden"
+                            style={{ animationDelay: '0.3s' }}
+                        >
+                            {/* Subtle emerald glow */}
+                            <div className="absolute top-0 right-0 w-32 h-32 bg-emerald-500/5 blur-[50px] rounded-full pointer-events-none" />
+
+                            <div className="flex items-start justify-between shrink-0 w-auto md:w-full">
+                                <div className="w-20 h-20 md:w-16 md:h-16 rounded-2xl bg-emerald-500/10 flex items-center justify-center group-hover:scale-110 transition-transform duration-300 relative border border-emerald-500/20">
+                                    <Eye className="w-10 h-10 md:w-8 md:h-8 text-emerald-100 animate-pulse duration-[3000ms]" />
+                                </div>
+                                <div className="hidden md:flex opacity-60 transition-opacity text-[10px] font-bold tracking-wider text-emerald-400 uppercase bg-emerald-500/10 px-2 py-1 rounded">
+                                    Real-time AI
+                                </div>
                             </div>
-                            <p className="text-white/80 text-sm leading-relaxed mb-3 md:mb-4">
-                                "This snack is high in sugar and contains palm oil, which may not align with a heart-healthy diet. It’s okay occasionally."
-                            </p>
-                            <div className="flex flex-wrap gap-2">
-                                {['High sugar', 'Processed oils', 'Occasional use'].map((tag, i) => (
-                                    <span key={i} className="px-2.5 py-1 rounded-md bg-white/5 border border-white/5 text-[11px] text-white/60">
-                                        {tag}
-                                    </span>
-                                ))}
+                            <div className="relative">
+                                <div className="flex items-center gap-2 mb-1">
+                                    <h3 className="text-2xl md:text-lg font-medium text-white">Live Vision</h3>
+                                    <div className="md:hidden opacity-60 text-[9px] font-bold tracking-wider text-emerald-400 uppercase bg-emerald-500/10 px-2 py-0.5 rounded">
+                                        AI
+                                    </div>
+                                </div>
+                                <p className="text-white/40 text-base md:text-sm leading-tight">Let me watch and guide you in real time.</p>
                             </div>
-                        </div>
+                        </button>
                     </div>
 
+                    {/* 3. Inline AI Explanation */}
+                    <div className="mt-6 mb-2 text-center animate-fade-in" style={{ animationDelay: '0.4s' }}>
+                        <p className="text-white/30 text-xs md:text-sm font-light tracking-wide">
+                            I can watch the product with you and tell you if it’s okay to buy — instantly.
+                        </p>
+                    </div>
                     {/* 5. Suggested Chips */}
                     <div className="flex flex-wrap justify-center gap-2 mt-4 md:mt-12 mb-4 animate-fade-in" style={{ animationDelay: '0.4s' }}>
                         {[
@@ -208,19 +305,32 @@ export const Homepage = ({ onAnalysisComplete }: HomepageProps) => {
 
                         <input
                             type="text"
-                            value={textInput}
-                            onChange={(e) => setTextInput(e.target.value)}
+                            value={textInput + (interimText ? (textInput.length > 0 ? ' ' : '') + interimText : '')}
+                            onChange={(e) => {
+                                setTextInput(e.target.value);
+                                setInterimText('');
+                            }}
                             onKeyPress={(e) => e.key === 'Enter' && handleTextSubmit()}
-                            placeholder="Ask ClarioAI or scan..."
+                            placeholder={isListening ? "Listening..." : "Ask ClarioAI or scan..."}
                             className="flex-1 bg-transparent border-none outline-none text-white text-sm placeholder-white/30 h-full py-2"
                         />
 
                         {/* Mic / Send */}
                         <button
-                            onClick={() => textInput ? handleTextSubmit() : null}
-                            className={`p-3 rounded-full transition-all duration-300 ${textInput ? 'bg-emerald-500 text-white' : 'hover:bg-white/10 text-white/50 hover:text-white'}`}
+                            onClick={() => textInput ? handleTextSubmit() : toggleVoice()}
+                            className={`p-3 rounded-full transition-all duration-300 ${isListening ? 'bg-red-500/10 text-red-500' : (textInput ? 'bg-emerald-500 text-white' : 'hover:bg-white/10 text-white/50 hover:text-white')}`}
                         >
-                            {textInput ? <ArrowUp className="w-5 h-5" /> : <Mic className="w-5 h-5" />}
+                            {textInput ? (
+                                <ArrowUp className="w-5 h-5" />
+                            ) : (
+                                isListening ? (
+                                    <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor" stroke="none">
+                                        <rect x="6" y="6" width="12" height="12" rx="2" />
+                                    </svg>
+                                ) : (
+                                    <Mic className="w-5 h-5" />
+                                )
+                            )}
                         </button>
                     </div>
                 </div>

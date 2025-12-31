@@ -7,6 +7,7 @@ interface CameraScannerProps {
     isOpen: boolean;
     onClose: () => void;
     onScan: (data: AnalysisData | File) => void;
+    initialLiveMode?: boolean;
 }
 
 // Mock Data for "Bournvita" / Generic Biscuit based on file names seen in public dir
@@ -25,7 +26,7 @@ const MOCK_ANALYSIS: AnalysisData = {
     summary: "While marketed as a health booster, the ingredient profile resembles a confectionary product. Proceed with moderation if sugar intake is a concern."
 };
 
-export const CameraScanner: React.FC<CameraScannerProps> = ({ isOpen, onClose, onScan }) => {
+export const CameraScanner: React.FC<CameraScannerProps> = ({ isOpen, onClose, onScan, initialLiveMode = false }) => {
     const videoRef = useRef<HTMLVideoElement>(null);
     const fileInputRef = useRef<HTMLInputElement>(null);
     const [stream, setStream] = useState<MediaStream | null>(null);
@@ -33,18 +34,31 @@ export const CameraScanner: React.FC<CameraScannerProps> = ({ isOpen, onClose, o
     const [isCapturing, setIsCapturing] = useState(false);
 
     // Live Mode State
-    // Live Mode State
-    const [isLiveMode, setIsLiveMode] = useState(false);
-    const [lastSpoken, setLastSpoken] = useState<string>('');
+    const [isLiveMode, setIsLiveMode] = useState(initialLiveMode);
+    const isLiveModeRef = useRef(initialLiveMode); // Ref to track live mode for callbacks
+    const [lastSpoken, setLastSpoken] = useState<{ text: string, sender: 'user' | 'ai' } | null>(null);
     const lastSpokenRef = useRef<string>(''); // Ref to track latest value in intervals
     const analysisInterval = useRef<any>(null);
+    const isAISpeaking = useRef(false);
+
+    useEffect(() => {
+        isLiveModeRef.current = isLiveMode; // Sync ref
+        if (isLiveMode) {
+            startLiveAnalysis();
+        } else {
+            stopLiveAnalysis();
+        }
+    }, [isLiveMode]);
 
     useEffect(() => {
         if (isOpen) {
+            setIsLiveMode(initialLiveMode);
             startCamera();
         } else {
             stopCamera();
-            stopLiveAnalysis();
+            stopLiveAnalysis(); // This handles logical cleanup
+            // Immediate synchronous cancel for UI responsiveness
+            window.speechSynthesis?.cancel();
             setIsCapturing(false);
             setIsLiveMode(false);
         }
@@ -52,17 +66,9 @@ export const CameraScanner: React.FC<CameraScannerProps> = ({ isOpen, onClose, o
         return () => {
             stopCamera();
             stopLiveAnalysis();
+            window.speechSynthesis?.cancel();
         };
     }, [isOpen]);
-
-    // Handle Live Mode Toggle
-    useEffect(() => {
-        if (isLiveMode) {
-            startLiveAnalysis();
-        } else {
-            stopLiveAnalysis();
-        }
-    }, [isLiveMode]);
 
     const startCamera = async () => {
         try {
@@ -115,56 +121,113 @@ export const CameraScanner: React.FC<CameraScannerProps> = ({ isOpen, onClose, o
         const { startListening, detectLanguage } = await import('../services/speech');
 
         // Start listening
-        startListening(async (transcript) => {
-            setLastSpoken(`You: "${transcript}"`);
-            lastSpokenRef.current = transcript;
+        startListening(
+            async (transcript, isFinal) => {
+                // Visualize what the user is saying immediately
+                setLastSpoken({ text: transcript, sender: 'user' });
+                lastSpokenRef.current = transcript;
 
-            const file = captureFrameAsFile();
-            if (file) {
-                try {
-                    const { aiService } = await import('../services/ai');
-                    const { speak } = await import('../services/speech');
+                // Only analyze if the user has finished a sentence AND AI isn't currently talking
+                if (isFinal && !isAISpeaking.current) {
+                    const file = captureFrameAsFile();
+                    if (file) {
+                        try {
+                            const { aiService } = await import('../services/ai');
+                            const { speak } = await import('../services/speech');
 
-                    const responseText = await aiService.analyzeStreamFrame(file, transcript);
-                    if (responseText) {
-                        setLastSpoken(responseText);
-                        lastSpokenRef.current = responseText;
+                            // Pause passive loop essentially by resetting intent? 
+                            // Actually just analyze.
+                            const responseText = await aiService.analyzeStreamFrame(file, transcript);
 
-                        // Speak in detected language of response (or fallback to user's language)
-                        const langKey = detectLanguage(responseText);
-                        speak(responseText, langKey);
+                            if (responseText) {
+                                // Don't show text yet - wait for speech to start for sync
+                                // setLastSpoken({ text: responseText, sender: 'ai' }); // REMOVED
+                                lastSpokenRef.current = responseText;
+
+                                const langKey = detectLanguage(responseText);
+
+                                // Show text immediately (Fail-safe)
+                                setLastSpoken({ text: responseText, sender: 'ai' });
+                                lastSpokenRef.current = responseText;
+
+                                speak(
+                                    responseText,
+                                    langKey,
+                                    () => { // onStart
+                                        isAISpeaking.current = true;
+                                        // Safety valve: Force reset after 15s in case onEnd never fires
+                                        setTimeout(() => {
+                                            if (isAISpeaking.current) {
+                                                console.warn("Force resetting AI speech state");
+                                                isAISpeaking.current = false;
+                                            }
+                                        }, 15000);
+                                    },
+                                    () => { // onEnd
+                                        isAISpeaking.current = false;
+                                    }
+                                );
+                            }
+                        } catch (e) {
+                            console.error("Live analysis error", e);
+                        }
                     }
-                } catch (e) {
-                    console.error("Live analysis error", e);
+                }
+            },
+            () => {
+                // onStop: Auto-restart if we are still in live mode
+                if (isLiveModeRef.current) {
+                    console.log("Speech recognition stopped, restarting...");
+                    startLiveAnalysis();
+                }
+            },
+            (err) => {
+                console.warn("Speech error, restarting...", err);
+                if (isLiveModeRef.current) {
+                    // Small delay to prevent thrashing loop on hard errors
+                    setTimeout(() => startLiveAnalysis(), 1000);
                 }
             }
-        });
+        );
 
         // Keep a passive background loop for "Show and Tell" (every 5s)
-        analysisInterval.current = setInterval(async () => {
-            // If we haven't spoken in a while, take a look
-            const file = captureFrameAsFile();
-            if (file) {
-                try {
-                    const { aiService } = await import('../services/ai');
-                    const { speak } = await import('../services/speech');
+        if (!analysisInterval.current) {
+            analysisInterval.current = setInterval(async () => {
+                // Don't interrupt if AI is speaking or if we just spoke recently
+                if (isAISpeaking.current) return;
 
-                    // No user prompt for passive mode (AI decides)
-                    const responseText = await aiService.analyzeStreamFrame(file);
+                const file = captureFrameAsFile();
+                if (file) {
+                    try {
+                        const { aiService } = await import('../services/ai');
+                        const { speak } = await import('../services/speech');
 
-                    // Only speak if it's new information to avoid repetition and use Ref for fresh value
-                    if (responseText && responseText !== lastSpokenRef.current) {
-                        setLastSpoken(responseText);
-                        lastSpokenRef.current = responseText;
+                        const responseText = await aiService.analyzeStreamFrame(file);
 
-                        const langKey = "en-IN"; // Default for passive
-                        speak(responseText, langKey);
+                        // Only speak if it's new information to avoid repetition
+                        if (responseText && responseText !== lastSpokenRef.current && !isAISpeaking.current) {
+                            // Show text immediately (Fail-safe)
+                            setLastSpoken({ text: responseText, sender: 'ai' });
+                            lastSpokenRef.current = responseText;
+
+                            const langKey = "en-IN"; // Default for passive
+                            speak(
+                                responseText,
+                                langKey,
+                                () => {
+                                    isAISpeaking.current = true;
+                                },
+                                () => {
+                                    isAISpeaking.current = false;
+                                }
+                            );
+                        }
+                    } catch (e) {
+                        console.error("Passive analysis error", e);
                     }
-                } catch (e) {
-                    console.error("Passive analysis error", e);
                 }
-            }
-        }, 5000);
+            }, 5000);
+        }
     };
 
     const stopLiveAnalysis = async () => {
@@ -176,6 +239,7 @@ export const CameraScanner: React.FC<CameraScannerProps> = ({ isOpen, onClose, o
             analysisInterval.current = null;
         }
         window.speechSynthesis?.cancel();
+        isAISpeaking.current = false;
     };
 
     const handleCapture = () => {
@@ -242,13 +306,14 @@ export const CameraScanner: React.FC<CameraScannerProps> = ({ isOpen, onClose, o
                         <X className="w-6 h-6 md:w-7 md:h-7 text-white" />
                     </button>
 
-                    {/* Live Mode Toggle */}
-                    <button
-                        onClick={() => setIsLiveMode(!isLiveMode)}
-                        className={`px-4 py-2 rounded-full text-sm font-bold tracking-wide transition-all border ${isLiveMode ? 'bg-red-500/20 text-red-400 border-red-500/50' : 'bg-white/10 text-white border-white/10'}`}
-                    >
-                        {isLiveMode ? 'LIVE VISION ON' : 'ENABLE LIVE VISION'}
-                    </button>
+                    {/* Live Mode Indicator (Only visible in Live Mode) */}
+                    {isLiveMode && (
+                        <div
+                            className="px-4 py-2 rounded-full text-sm font-bold tracking-wide border bg-emerald-500/20 text-emerald-400 border-emerald-500/50"
+                        >
+                            LIVE VISION ON
+                        </div>
+                    )}
                 </div>
 
                 {/* Camera View */}
@@ -262,10 +327,22 @@ export const CameraScanner: React.FC<CameraScannerProps> = ({ isOpen, onClose, o
 
                     {/* Live Feedback Overlay */}
                     {isLiveMode && (
-                        <div className="absolute inset-0 border-[6px] border-red-500/30 animate-pulse pointer-events-none">
+                        <div className="absolute inset-0 border-[6px] border-emerald-500/30 pointer-events-none">
                             <div className="absolute bottom-10 left-0 right-0 p-6 text-center">
-                                <span className="inline-block px-4 py-2 bg-black/60 backdrop-blur-md rounded-xl text-white/90 text-lg font-medium shadow-xl">
-                                    {lastSpoken || "Listening..."}
+                                <span className={`inline-block px-4 py-3 backdrop-blur-md rounded-2xl text-lg font-medium transition-all max-w-[90%] ${lastSpoken?.sender === 'user'
+                                    ? 'bg-black/60 text-white/90 border border-white/20'
+                                    : 'bg-emerald-950/80 text-emerald-100 border border-emerald-500/30'
+                                    }`}>
+                                    {lastSpoken ? (
+                                        <>
+                                            <span className="opacity-50 text-xs uppercase tracking-wider block mb-1">
+                                                {lastSpoken.sender === 'user' ? 'You' : 'Clario AI'}
+                                            </span>
+                                            {lastSpoken.text}
+                                        </>
+                                    ) : (
+                                        "Listening..."
+                                    )}
                                 </span>
                             </div>
                         </div>

@@ -1,18 +1,67 @@
 import React from 'react';
 
+import { startListening, stopListening, isSpeechSupported } from '../services/speech';
+
 interface InputProps {
     onSend?: (text: string, file?: File) => void;
 }
 
 export const Input: React.FC<InputProps> = ({ onSend }) => {
     const [text, setText] = React.useState('');
+    const [interimText, setInterimText] = React.useState('');
     const [isListening, setIsListening] = React.useState(false);
     const fileInputRef = React.useRef<HTMLInputElement>(null);
 
+    React.useEffect(() => {
+        if (isListening) {
+            startListening(
+                (transcript, isFinal) => {
+                    if (isFinal) {
+                        setText((prev) => {
+                            const separator = prev.length > 0 ? ' ' : '';
+                            return prev + separator + transcript;
+                        });
+                        setInterimText('');
+                    } else {
+                        setInterimText(transcript);
+                    }
+                },
+                () => {
+                    // onStop callback (e.g. mic permission denied or user stopped speaking long enough)
+                    setIsListening(false);
+                    setInterimText('');
+                },
+                (error) => {
+                    // onError callback
+                    console.error("Voice input error:", error);
+                    setIsListening(false);
+                    setInterimText('');
+                    if (error === 'not-allowed') {
+                        alert("Microphone access denied. Please enable permissions.");
+                    } else if (error === 'no-speech') {
+                        // Ignore no-speech, just stop listening usually or stay listening?
+                        // usually browser stops, so our onStop handles the state reset.
+                    } else {
+                        alert(`Voice Error: ${error}`);
+                    }
+                }
+            );
+        } else {
+            stopListening();
+            setInterimText('');
+        }
+
+        return () => {
+            stopListening();
+        };
+    }, [isListening]);
+
     const handleSend = () => {
-        if (text.trim()) {
-            onSend?.(text);
+        const fullText = (text + (interimText ? ' ' + interimText : '')).trim();
+        if (fullText) {
+            onSend?.(fullText);
             setText('');
+            setInterimText('');
         }
     };
 
@@ -38,6 +87,13 @@ export const Input: React.FC<InputProps> = ({ onSend }) => {
     };
 
     const toggleVoice = () => {
+        if (!isListening) {
+            // Check support before starting
+            if (!isSpeechSupported()) {
+                alert("Voice typing is not supported in this browser. Please use Chrome, Edge, or Safari.");
+                return;
+            }
+        }
         setIsListening(!isListening);
     };
 
@@ -91,8 +147,11 @@ export const Input: React.FC<InputProps> = ({ onSend }) => {
 
             <input
                 type="text"
-                value={text}
-                onChange={(e) => setText(e.target.value)}
+                value={text + (interimText ? (text ? ' ' : '') + interimText : '')}
+                onChange={(e) => {
+                    setText(e.target.value);
+                    setInterimText(''); // Clear interim if user manually types, though unusual scenario
+                }}
                 onKeyDown={handleKeyDown}
                 placeholder={isListening ? "Listening..." : "Ask AI or scan..."}
                 style={{
@@ -107,7 +166,7 @@ export const Input: React.FC<InputProps> = ({ onSend }) => {
                 }}
             />
             <div style={{ display: 'flex', gap: '8px' }}>
-                {/* Voice Button */}
+                {/* Voice/Stop Button */}
                 <button
                     onClick={toggleVoice}
                     style={{
@@ -121,12 +180,18 @@ export const Input: React.FC<InputProps> = ({ onSend }) => {
                         transition: 'all 0.2s'
                     }}
                 >
-                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                        <path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z" />
-                        <path d="M19 10v2a7 7 0 0 1-14 0v-2" />
-                        <line x1="12" y1="19" x2="12" y2="23" />
-                        <line x1="8" y1="23" x2="16" y2="23" />
-                    </svg>
+                    {isListening ? (
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor" stroke="none">
+                            <rect x="6" y="6" width="12" height="12" rx="2" />
+                        </svg>
+                    ) : (
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                            <path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z" />
+                            <path d="M19 10v2a7 7 0 0 1-14 0v-2" />
+                            <line x1="12" y1="19" x2="12" y2="23" />
+                            <line x1="8" y1="23" x2="16" y2="23" />
+                        </svg>
+                    )}
                 </button>
 
                 {/* Send Button */}

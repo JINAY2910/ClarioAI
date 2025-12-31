@@ -107,6 +107,7 @@ export class GeminiService {
                 Look at the image and answer the user's question.
                 IMPORTANT: Detect the language of the user's question (e.g., Hindi, Gujarati, English).
                 Reply IN THE SAME LANGUAGE as the user's question.
+                Do NOT announce the detected language. Just give the answer directly.
                 Keep it short and conversational (max 1 sentence).
             `;
         }
