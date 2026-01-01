@@ -286,7 +286,7 @@ export const CameraScanner: React.FC<CameraScannerProps> = ({ isOpen, onClose, o
     if (!isOpen) return null;
 
     return createPortal(
-        <div className="fixed inset-0 z-[9999] bg-black">
+        <div className="fixed inset-0 z-[9999] bg-black h-[100dvh] w-full">
             <div className="w-full h-full bg-black flex flex-col">
                 {/* Hidden File Input */}
                 <input
@@ -328,7 +328,7 @@ export const CameraScanner: React.FC<CameraScannerProps> = ({ isOpen, onClose, o
                     {/* Live Feedback Overlay */}
                     {isLiveMode && (
                         <div className="absolute inset-0 border-[6px] border-emerald-500/30 pointer-events-none">
-                            <div className="absolute bottom-10 left-0 right-0 p-6 text-center">
+                            <div className="absolute bottom-10 left-0 right-0 p-6 text-center pb-[calc(2.5rem+env(safe-area-inset-bottom,20px))]">
                                 <span className={`inline-block px-4 py-3 backdrop-blur-md rounded-2xl text-lg font-medium transition-all max-w-[90%] ${lastSpoken?.sender === 'user'
                                     ? 'bg-black/60 text-white/90 border border-white/20'
                                     : 'bg-emerald-950/80 text-emerald-100 border border-emerald-500/30'
@@ -350,7 +350,7 @@ export const CameraScanner: React.FC<CameraScannerProps> = ({ isOpen, onClose, o
                 </div>
 
                 {/* Bottom Controls */}
-                <div className="relative bg-gradient-to-t from-black/90 via-black/70 to-transparent p-4 md:p-6 pb-6 md:pb-8">
+                <div className="relative bg-gradient-to-t from-black/90 via-black/70 to-transparent p-4 md:p-6 pb-[calc(1.5rem+env(safe-area-inset-bottom,20px))] md:pb-8">
                     <div className="flex items-center justify-center gap-8 md:gap-12 max-w-2xl mx-auto">
                         {/* Capture Button (Hidden or Disabled in Live Mode to emphasize hands-free) */}
                         {!isLiveMode && (

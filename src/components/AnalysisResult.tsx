@@ -54,7 +54,7 @@ export const AnalysisResult: React.FC<AnalysisResultProps> = ({ data }) => {
 
     return (
         <div className="relative w-full">
-            <div className="relative z-10 px-6 pb-8 pt-32">
+            <div className="relative z-10 px-4 md:px-6 pb-8 pt-20 md:pt-32">
                 {/* Header */}
                 {/* Header Removed as per user request */}
 
@@ -72,7 +72,7 @@ export const AnalysisResult: React.FC<AnalysisResultProps> = ({ data }) => {
                                 <span className="text-xs font-bold tracking-wider text-white/50 uppercase">Analysis Outcome</span>
                             </div>
 
-                            <h2 className={`text-3xl font-bold bg-clip-text text-transparent bg-gradient-to-r ${intentStyle.color === 'text-emerald-400' ? 'from-emerald-400 to-teal-200' : intentStyle.color === 'text-amber-400' ? 'from-amber-400 to-orange-200' : 'from-red-400 to-rose-300'} mb-2`}>
+                            <h2 className={`text-2xl md:text-3xl font-bold bg-clip-text text-transparent bg-gradient-to-r ${intentStyle.color === 'text-emerald-400' ? 'from-emerald-400 to-teal-200' : intentStyle.color === 'text-amber-400' ? 'from-amber-400 to-orange-200' : 'from-red-400 to-rose-300'} mb-2`}>
                                 {data.intentLabel}
                             </h2>
                             <p className="text-sm text-white/50 font-medium">Based on your scan</p>
@@ -83,7 +83,7 @@ export const AnalysisResult: React.FC<AnalysisResultProps> = ({ data }) => {
                 {/* Insight Text */}
                 <div className="mb-8 px-2">
                     <div
-                        className="text-white/90 text-xl font-light leading-relaxed tracking-wide"
+                        className="text-white/90 text-lg md:text-xl font-light leading-relaxed tracking-wide"
                         dangerouslySetInnerHTML={{
                             __html: processInsight(data.primaryInsight)
                         }}

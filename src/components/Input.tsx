@@ -98,46 +98,19 @@ export const Input: React.FC<InputProps> = ({ onSend }) => {
     };
 
     return (
-        <div style={{
-            display: 'flex',
-            alignItems: 'center',
-            background: 'var(--color-card-bg)',
-            border: '1px solid var(--color-card-border)',
-            borderRadius: 'var(--radius-full)',
-            padding: '8px 8px 8px 20px',
-            gap: '12px',
-            marginTop: 'auto'
-        }}>
+        <div className="flex items-center bg-white/[0.03] border border-white/5 rounded-full p-2 pl-5 gap-3 mt-auto w-full transition-all duration-300 hover:bg-white/[0.05]">
             {/* Hidden File Input */}
             <input
                 type="file"
                 ref={fileInputRef}
-                style={{ display: 'none' }}
+                className="hidden"
                 onChange={handleFileChange}
             />
 
             {/* Attachment Button */}
-            <button style={{
-                padding: '8px',
-                color: 'var(--color-text-dim)',
-                borderRadius: '50%',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                cursor: 'pointer',
-                transition: 'all 0.2s',
-                background: 'rgba(255,255,255,0.05)',
-                border: 'none'
-            }}
+            <button
+                className="p-2 text-white/40 rounded-full flex items-center justify-center cursor-pointer transition-all duration-200 bg-white/5 border border-transparent hover:bg-white/10 hover:text-white hover:border-white/10"
                 onClick={handleFileClick}
-                onMouseEnter={(e) => {
-                    e.currentTarget.style.background = 'rgba(255,255,255,0.1)';
-                    e.currentTarget.style.color = 'var(--color-text)';
-                }}
-                onMouseLeave={(e) => {
-                    e.currentTarget.style.background = 'rgba(255,255,255,0.05)';
-                    e.currentTarget.style.color = 'var(--color-text-dim)';
-                }}
             >
                 <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                     <line x1="12" y1="5" x2="12" y2="19" />
@@ -150,35 +123,21 @@ export const Input: React.FC<InputProps> = ({ onSend }) => {
                 value={text + (interimText ? (text ? ' ' : '') + interimText : '')}
                 onChange={(e) => {
                     setText(e.target.value);
-                    setInterimText(''); // Clear interim if user manually types, though unusual scenario
+                    setInterimText('');
                 }}
                 onKeyDown={handleKeyDown}
                 placeholder={isListening ? "Listening..." : "Ask AI or scan..."}
-                style={{
-                    flex: 1,
-                    background: 'none',
-                    border: 'none',
-                    color: 'var(--color-text)',
-                    fontSize: '16px',
-                    outline: 'none',
-                    minWidth: 0,
-                    paddingLeft: '4px'
-                }}
+                className="flex-1 bg-transparent border-none text-white text-base outline-none min-w-0 pl-1 placeholder:text-white/30"
             />
-            <div style={{ display: 'flex', gap: '8px' }}>
+
+            <div className="flex gap-2">
                 {/* Voice/Stop Button */}
                 <button
                     onClick={toggleVoice}
-                    style={{
-                        padding: '8px',
-                        color: isListening ? '#ef4444' : 'var(--color-text-dim)', // Red when listening
-                        borderRadius: '50%',
-                        display: 'flex',
-                        background: isListening ? 'rgba(239, 68, 68, 0.1)' : 'transparent',
-                        border: 'none',
-                        cursor: 'pointer',
-                        transition: 'all 0.2s'
-                    }}
+                    className={`p-2 rounded-full flex items-center justify-center cursor-pointer transition-all duration-200 border border-transparent ${isListening
+                            ? 'text-red-500 bg-red-500/10 hover:bg-red-500/20'
+                            : 'text-white/40 bg-transparent hover:bg-white/10 hover:text-white'
+                        }`}
                 >
                     {isListening ? (
                         <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor" stroke="none">
@@ -197,20 +156,10 @@ export const Input: React.FC<InputProps> = ({ onSend }) => {
                 {/* Send Button */}
                 <button
                     onClick={handleSend}
-                    style={{
-                        width: '40px',
-                        height: '40px',
-                        borderRadius: '50%',
-                        background: text.trim() ? 'var(--color-text)' : 'var(--color-text-dim)', // Active state
-                        color: 'var(--color-bg)',
-                        display: 'flex',
-                        alignItems: 'center',
-                        justifyContent: 'center',
-                        border: 'none',
-                        cursor: text.trim() ? 'pointer' : 'default',
-                        transition: 'all 0.2s',
-                        opacity: text.trim() ? 1 : 0.5
-                    }}
+                    className={`w-10 h-10 rounded-full flex items-center justify-center border border-transparent transition-all duration-200 ${text.trim()
+                            ? 'bg-white text-black cursor-pointer shadow-[0_0_15px_rgba(255,255,255,0.3)] hover:scale-105 active:scale-95'
+                            : 'bg-white/5 text-background cursor-default opacity-50'
+                        }`}
                 >
                     <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                         <line x1="22" y1="2" x2="11" y2="13" />

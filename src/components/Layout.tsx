@@ -17,7 +17,7 @@ export const Layout: React.FC<LayoutProps> = ({ children, activeTab, onNavigate 
   ];
 
   return (
-    <div className="flex h-screen w-full overflow-hidden bg-background text-primary selection:bg-surface selection:text-white">
+    <div className="flex h-[100dvh] w-full overflow-hidden bg-background text-primary selection:bg-surface selection:text-white">
       {/* Mobile Header */}
       <div className="fixed top-0 left-0 right-0 z-40 flex items-center justify-between p-4 md:hidden bg-background border-b border-white/5">
         <div className="flex items-center gap-2">

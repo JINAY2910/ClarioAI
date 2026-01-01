@@ -175,16 +175,16 @@ export const Homepage = ({ onAnalysisComplete }: HomepageProps) => {
                 <div className="w-full max-w-md md:max-w-3xl flex flex-col items-center pb-6">
 
                     {/* 1. Hero Section - Presence */}
-                    <div className="flex flex-col items-center text-center space-y-8 mb-12 animate-fade-in z-10">
+                    <div className="flex flex-col items-center text-center space-y-6 md:space-y-8 mb-8 md:mb-12 animate-fade-in z-10">
 
                         <div className="space-y-6 max-w-2xl mx-auto">
                             <div className="relative">
 
-                                <h1 className="relative text-3xl md:text-5xl font-light tracking-wide text-white/95">
+                                <h1 className="relative text-3xl sm:text-4xl md:text-5xl font-light tracking-wide text-white/95 leading-tight">
                                     Clarity before you choose.
                                 </h1>
                             </div>
-                            <p className="text-white/70 text-sm md:text-base font-light leading-relaxed max-w-md mx-auto tracking-wide">
+                            <p className="text-white/70 text-sm md:text-base font-light leading-relaxed max-w-md mx-auto tracking-wide px-4">
                                 I help you understand what’s really in your food.
                             </p>
                         </div>
@@ -259,8 +259,8 @@ export const Homepage = ({ onAnalysisComplete }: HomepageProps) => {
                     </div>
 
                     {/* 3. Inline AI Explanation */}
-                    <div className="mt-6 mb-2 text-center animate-fade-in" style={{ animationDelay: '0.4s' }}>
-                        <p className="text-white/30 text-xs md:text-sm font-light tracking-wide">
+                    <div className="mt-6 mb-2 text-center animate-fade-in px-4" style={{ animationDelay: '0.4s' }}>
+                        <p className="text-white/30 text-xs md:text-sm font-light tracking-wide leading-relaxed">
                             I can watch the product with you and tell you if it’s okay to buy — instantly.
                         </p>
                     </div>
@@ -292,7 +292,7 @@ export const Homepage = ({ onAnalysisComplete }: HomepageProps) => {
             </div>
 
             {/* 7. Bottom Interaction Bar - Fixed at bottom of flex column */}
-            <div className="z-20 w-full p-4 md:p-6 bg-gradient-to-t from-background via-background/95 to-transparent flex-none">
+            <div className="z-20 w-full p-4 md:p-6 bg-gradient-to-t from-background via-background/95 to-transparent flex-none pb-[env(safe-area-inset-bottom,20px)]">
                 <div className="max-w-md md:max-w-3xl mx-auto">
                     <div className="relative flex items-center gap-2 bg-neutral-900/90 backdrop-blur-xl border border-white/10 rounded-full px-2 py-2 shadow-2xl shadow-black/50">
                         {/* Camera Trigger */}

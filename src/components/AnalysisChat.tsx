@@ -80,7 +80,7 @@ export const AnalysisChat: React.FC<AnalysisChatProps> = ({ data, onReset }) => 
             <div className="absolute bottom-[-10%] left-[-10%] w-[500px] h-[500px] bg-blue-500/10 rounded-full blur-[120px] pointer-events-none" />
 
             {/* Scrollable Content Area */}
-            <div className="flex-1 overflow-y-auto overflow-x-hidden pb-40 scroll-smooth">
+            <div className="flex-1 overflow-y-auto overflow-x-hidden pb-[calc(120px+env(safe-area-inset-bottom))] scroll-smooth">
                 <div className="max-w-xl mx-auto w-full">
                     {/* 1. Analysis Result (Context) */}
                     <AnalysisResult data={data} onReset={onReset} />
@@ -141,7 +141,7 @@ export const AnalysisChat: React.FC<AnalysisChatProps> = ({ data, onReset }) => 
             </div>
 
             {/* Floating Input Dock */}
-            <div className="absolute bottom-0 left-0 right-0 z-20 pb-2 pt-24 px-4 bg-gradient-to-t from-black via-black/80 to-transparent pointer-events-none">
+            <div className="absolute bottom-0 left-0 right-0 z-20 pb-[calc(0.5rem+env(safe-area-inset-bottom,20px))] pt-24 px-4 bg-gradient-to-t from-black via-black/80 to-transparent pointer-events-none">
                 <div className="max-w-xl mx-auto w-full pointer-events-auto">
                     <div className="backdrop-blur-xl bg-white/10 border border-white/10 rounded-[28px] p-1.5 shadow-2xl shadow-black/50 ring-1 ring-white/5 transform transition-all hover:bg-white/[0.12] hover:scale-[1.01]">
                         <Input onSend={handleSend} />
