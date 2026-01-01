@@ -171,27 +171,25 @@ export const Homepage = ({ onAnalysisComplete }: HomepageProps) => {
             />
 
             {/* Main Content Scroll Area */}
-            <div className="relative z-10 flex-1 flex flex-col items-center pt-8 md:pt-16 px-6 w-full overflow-y-auto scrollbar-hide">
-                <div className="w-full max-w-md md:max-w-3xl flex flex-col items-center pb-6">
+            <div className="relative z-10 flex-1 flex flex-col items-center pt-2 md:pt-16 px-4 w-full overflow-hidden">
+                <div className="w-full max-w-md md:max-w-3xl flex flex-col items-center h-full pb-2 md:pb-6">
 
                     {/* 1. Hero Section - Presence */}
-                    <div className="flex flex-col items-center text-center space-y-6 md:space-y-8 mb-8 md:mb-12 animate-fade-in z-10">
-
-                        <div className="space-y-6 max-w-2xl mx-auto">
+                    <div className="flex flex-col items-center text-center space-y-6 md:space-y-8 animate-fade-in z-10 shrink-0 mb-6 md:mb-12">
+                        <div className="space-y-1 md:space-y-6 max-w-2xl mx-auto">
                             <div className="relative">
-
-                                <h1 className="relative text-3xl sm:text-4xl md:text-5xl font-light tracking-wide text-white/95 leading-tight">
+                                <h1 className="relative text-2xl md:text-5xl font-light tracking-wide text-white/95">
                                     Clarity before you choose.
                                 </h1>
                             </div>
-                            <p className="text-white/70 text-sm md:text-base font-light leading-relaxed max-w-md mx-auto tracking-wide px-4">
+                            <p className="text-white/70 text-xs md:text-base font-light leading-relaxed max-w-md mx-auto tracking-wide">
                                 I help you understand what’s really in your food.
                             </p>
                         </div>
                     </div>
 
                     {/* 2. AI "Alive" State */}
-                    <div className="mb-8 animate-fade-in flex gap-3" style={{ animationDelay: '0.1s' }}>
+                    <div className="mb-4 md:mb-8 animate-fade-in flex gap-3 shrink-0" style={{ animationDelay: '0.1s' }}>
                         <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-white/5 border border-white/10 backdrop-blur-md">
                             <span className="relative flex h-2 w-2">
                                 <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
@@ -208,68 +206,68 @@ export const Homepage = ({ onAnalysisComplete }: HomepageProps) => {
                     </div>
 
                     {/* Desktop Layout Split */}
-                    <div className="w-full grid grid-cols-1 md:grid-cols-2 md:gap-6">
+                    <div className="w-full flex-1 md:flex-none flex flex-col justify-center md:grid md:grid-cols-2 gap-4 md:gap-6 min-h-0">
                         {/* 3. Primary Action - Check a Product */}
                         <button
                             onClick={handleNormalScanClick}
-                            className="w-full bg-white/5 border border-emerald-500/20 rounded-3xl p-6 text-left hover:bg-white/10 hover:border-emerald-500/40 transition-all duration-300 group mb-3 md:mb-0 animate-fade-in h-auto min-h-[140px] md:h-full flex flex-row md:flex-col md:justify-between items-center md:items-start gap-4 md:gap-0"
+                            className="w-full shrink-0 h-32 md:h-full bg-white/5 border border-emerald-500/20 rounded-3xl p-4 md:p-6 text-left hover:bg-white/10 hover:border-emerald-500/40 transition-all duration-300 group animate-fade-in flex flex-row md:flex-col md:justify-between items-center md:items-start gap-4 md:gap-0 min-h-0"
                             style={{ animationDelay: '0.2s' }}
                         >
                             <div className="flex items-start justify-between shrink-0 w-auto md:w-full">
-                                <div className="w-20 h-20 md:w-16 md:h-16 rounded-2xl bg-gradient-to-br from-emerald-500/20 to-teal-500/10 flex items-center justify-center group-hover:scale-110 transition-transform duration-300">
-                                    <ScanLine className="w-10 h-10 md:w-8 md:h-8 text-emerald-400" />
+                                <div className="w-16 h-16 md:w-16 md:h-16 rounded-2xl bg-gradient-to-br from-emerald-500/20 to-teal-500/10 flex items-center justify-center group-hover:scale-110 transition-transform duration-300">
+                                    <ScanLine className="w-8 h-8 md:w-8 md:h-8 text-emerald-400" />
                                 </div>
                                 <div className="hidden md:block opacity-0 group-hover:opacity-100 transition-opacity text-white/30">
                                     <ArrowUp className="w-6 h-6 rotate-45" />
                                 </div>
                             </div>
-                            <div>
-                                <h3 className="text-2xl md:text-lg font-medium text-white mb-1 md:mb-1">Check a product</h3>
-                                <p className="text-white/40 text-base md:text-sm whitespace-nowrap">Scan, type, or show ingredients</p>
+                            <div className="flex-1 min-w-0">
+                                <h3 className="text-xl md:text-lg font-medium text-white mb-1 md:mb-1">Check a product</h3>
+                                <p className="text-white/40 text-sm md:text-sm whitespace-nowrap overflow-hidden text-ellipsis">Scan, type, or show ingredients</p>
                             </div>
                         </button>
 
                         {/* 1. New Live Vision Card */}
                         <button
                             onClick={handleLiveVisionClick}
-                            className="w-full bg-white/5 border border-emerald-500/20 rounded-3xl p-6 text-left hover:bg-white/10 hover:border-emerald-500/40 transition-all duration-300 group mb-3 md:mb-0 animate-fade-in h-auto min-h-[140px] md:h-full flex flex-row md:flex-col md:justify-between items-center md:items-start gap-4 md:gap-0 relative overflow-hidden"
+                            className="w-full shrink-0 h-32 md:h-full bg-white/5 border border-emerald-500/20 rounded-3xl p-4 md:p-6 text-left hover:bg-white/10 hover:border-emerald-500/40 transition-all duration-300 group animate-fade-in flex flex-row md:flex-col md:justify-between items-center md:items-start gap-4 md:gap-0 relative overflow-hidden min-h-0"
                             style={{ animationDelay: '0.3s' }}
                         >
                             {/* Subtle emerald glow */}
                             <div className="absolute top-0 right-0 w-32 h-32 bg-emerald-500/5 blur-[50px] rounded-full pointer-events-none" />
 
                             <div className="flex items-start justify-between shrink-0 w-auto md:w-full">
-                                <div className="w-20 h-20 md:w-16 md:h-16 rounded-2xl bg-emerald-500/10 flex items-center justify-center group-hover:scale-110 transition-transform duration-300 relative border border-emerald-500/20">
-                                    <Eye className="w-10 h-10 md:w-8 md:h-8 text-emerald-100 animate-pulse duration-[3000ms]" />
+                                <div className="w-16 h-16 md:w-16 md:h-16 rounded-2xl bg-emerald-500/10 flex items-center justify-center group-hover:scale-110 transition-transform duration-300 relative border border-emerald-500/20">
+                                    <Eye className="w-8 h-8 md:w-8 md:h-8 text-emerald-100 animate-pulse duration-[3000ms]" />
                                 </div>
                                 <div className="hidden md:flex opacity-60 transition-opacity text-[10px] font-bold tracking-wider text-emerald-400 uppercase bg-emerald-500/10 px-2 py-1 rounded">
                                     Real-time AI
                                 </div>
                             </div>
-                            <div className="relative">
+                            <div className="relative flex-1 min-w-0">
                                 <div className="flex items-center gap-2 mb-1">
-                                    <h3 className="text-2xl md:text-lg font-medium text-white">Live Vision</h3>
+                                    <h3 className="text-xl md:text-lg font-medium text-white">Live Vision</h3>
                                     <div className="md:hidden opacity-60 text-[9px] font-bold tracking-wider text-emerald-400 uppercase bg-emerald-500/10 px-2 py-0.5 rounded">
-                                        AI
+                                        Real-time AI
                                     </div>
                                 </div>
-                                <p className="text-white/40 text-base md:text-sm leading-tight">Let me watch and guide you in real time.</p>
+                                <p className="text-white/40 text-sm md:text-sm leading-tight overflow-hidden text-ellipsis block">Let me watch and guide you in real time.</p>
                             </div>
                         </button>
                     </div>
 
                     {/* 3. Inline AI Explanation */}
-                    <div className="mt-6 mb-2 text-center animate-fade-in px-4" style={{ animationDelay: '0.4s' }}>
-                        <p className="text-white/30 text-xs md:text-sm font-light tracking-wide leading-relaxed">
+                    <div className="mt-2 text-center animate-fade-in shrink-0 hidden md:block" style={{ animationDelay: '0.4s' }}>
+                        <p className="text-white/30 text-xs md:text-sm font-light tracking-wide">
                             I can watch the product with you and tell you if it’s okay to buy — instantly.
                         </p>
                     </div>
                     {/* 5. Suggested Chips */}
-                    <div className="flex flex-wrap justify-center gap-2 mt-4 md:mt-12 mb-4 animate-fade-in" style={{ animationDelay: '0.4s' }}>
+                    <div className="flex flex-wrap justify-center gap-2 mt-auto md:mt-12 mb-2 md:mb-4 animate-fade-in shrink-0" style={{ animationDelay: '0.4s' }}>
                         {[
-                            "Is this okay for diabetics?",
-                            "Why does palm oil matter?",
-                            "Show a better option"
+                            "Is this safe?",
+                            "Palm oil?",
+                            "Better option?"
                         ].map((suggestion, i) => (
                             <button
                                 key={i}
@@ -282,17 +280,17 @@ export const Homepage = ({ onAnalysisComplete }: HomepageProps) => {
                     </div>
 
                     {/* 6. Minimal Philosophy */}
-                    <div className="flex items-center justify-center gap-6 text-[10px] tracking-widest uppercase text-white/20 animate-fade-in min-h-[20px]" style={{ animationDelay: '0.5s' }}>
+                    <div className="flex items-center justify-center gap-6 text-[10px] tracking-widest uppercase text-white/20 animate-fade-in min-h-[20px] mb-2" style={{ animationDelay: '0.5s' }}>
                         <span>No Data Dumps</span>
                         <span className="w-1 h-1 rounded-full bg-white/10" />
                         <span>Always Clear</span>
                     </div>
 
                 </div>
-            </div>
+            </div >
 
             {/* 7. Bottom Interaction Bar - Fixed at bottom of flex column */}
-            <div className="z-20 w-full p-4 md:p-6 bg-gradient-to-t from-background via-background/95 to-transparent flex-none pb-[env(safe-area-inset-bottom,20px)]">
+            < div className="z-20 w-full p-4 md:p-6 bg-gradient-to-t from-background via-background/95 to-transparent flex-none pb-[env(safe-area-inset-bottom,20px)]" >
                 <div className="max-w-md md:max-w-3xl mx-auto">
                     <div className="relative flex items-center gap-2 bg-neutral-900/90 backdrop-blur-xl border border-white/10 rounded-full px-2 py-2 shadow-2xl shadow-black/50">
                         {/* Camera Trigger */}
@@ -334,7 +332,7 @@ export const Homepage = ({ onAnalysisComplete }: HomepageProps) => {
                         </button>
                     </div>
                 </div>
-            </div>
-        </div>
+            </div >
+        </div >
     );
 };
