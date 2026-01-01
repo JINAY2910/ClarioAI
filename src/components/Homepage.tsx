@@ -290,8 +290,8 @@ export const Homepage = ({ onAnalysisComplete }: HomepageProps) => {
             </div >
 
             {/* 7. Bottom Interaction Bar - Fixed at bottom of flex column */}
-            < div className="z-20 w-full p-4 md:p-6 bg-gradient-to-t from-background via-background/95 to-transparent flex-none pb-[env(safe-area-inset-bottom,20px)]" >
-                <div className="max-w-md md:max-w-3xl mx-auto">
+            <div className="z-20 w-full p-4 md:p-6 bg-gradient-to-t from-background via-background/95 to-transparent flex-none pb-[env(safe-area-inset-bottom,20px)]">
+                <div className="max-w-md md:max-w-3xl mx-auto mb-4 md:mb-0">
                     <div className="relative flex items-center gap-2 bg-neutral-900/90 backdrop-blur-xl border border-white/10 rounded-full px-2 py-2 shadow-2xl shadow-black/50">
                         {/* Camera Trigger */}
                         <button
@@ -332,7 +332,7 @@ export const Homepage = ({ onAnalysisComplete }: HomepageProps) => {
                         </button>
                     </div>
                 </div>
-            </div >
-        </div >
+            </div>
+        </div>
     );
 };
