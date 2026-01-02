@@ -3,12 +3,10 @@ import React from 'react';
 interface SidebarProps {
     activeTab: string;
     onNavigate: (tab: string) => void;
-    onLogout: () => void;
-    user?: { name: string; avatar?: string };
     hideLogo?: boolean;
 }
 
-export const Sidebar: React.FC<SidebarProps> = ({ activeTab, onNavigate, onLogout, user, hideLogo }) => {
+export const Sidebar: React.FC<SidebarProps> = ({ activeTab, onNavigate, hideLogo }) => {
     const menuItems = [
         { id: 'home', label: 'Dashboard', icon: '🏠' },
         { id: 'history', label: 'History', icon: 'clock' },

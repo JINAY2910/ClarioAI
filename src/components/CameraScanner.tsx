@@ -30,7 +30,6 @@ export const CameraScanner: React.FC<CameraScannerProps> = ({ isOpen, onClose, o
     const videoRef = useRef<HTMLVideoElement>(null);
     const fileInputRef = useRef<HTMLInputElement>(null);
     const [stream, setStream] = useState<MediaStream | null>(null);
-    const [flashEnabled, setFlashEnabled] = useState(false);
     const [isCapturing, setIsCapturing] = useState(false);
 
     // Live Mode State
@@ -269,10 +268,6 @@ export const CameraScanner: React.FC<CameraScannerProps> = ({ isOpen, onClose, o
                 }
             }, 'image/jpeg', 0.8);
         }
-    };
-
-    const handleUploadClick = () => {
-        fileInputRef.current?.click();
     };
 
     const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {

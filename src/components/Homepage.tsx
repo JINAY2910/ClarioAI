@@ -135,10 +135,6 @@ export const Homepage = ({ onAnalysisComplete }: HomepageProps) => {
 
     return (
         <div className="relative flex flex-col h-full w-full bg-background text-white overflow-hidden selection:bg-emerald-500/30">
-            {/* Background Texture/Gradient */}
-
-
-            {/* Camera Scanner Modal */}
             {/* Camera Scanner Modal */}
             {isScannerOpen && (
                 <CameraScanner
@@ -185,23 +181,6 @@ export const Homepage = ({ onAnalysisComplete }: HomepageProps) => {
                             <p className="text-white/70 text-xs md:text-base font-light leading-relaxed max-w-md mx-auto tracking-wide">
                                 I help you understand what’s really in your food.
                             </p>
-                        </div>
-                    </div>
-
-                    {/* 2. AI "Alive" State */}
-                    <div className="mb-4 md:mb-8 animate-fade-in flex gap-3 shrink-0" style={{ animationDelay: '0.1s' }}>
-                        <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-white/5 border border-white/10 backdrop-blur-md">
-                            <span className="relative flex h-2 w-2">
-                                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
-                                <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-500"></span>
-                            </span>
-                            <span className="text-xs font-medium text-white/70 tracking-wide">AI Co-Pilot Active</span>
-                        </div>
-
-                        {/* 4. Soft Status Indicator */}
-                        <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-emerald-500/10 border border-emerald-500/20 backdrop-blur-md">
-                            <Eye size={10} className="text-emerald-400" />
-                            <span className="text-xs font-medium text-emerald-400/90 tracking-wide">Live Vision Ready</span>
                         </div>
                     </div>
 
@@ -255,13 +234,6 @@ export const Homepage = ({ onAnalysisComplete }: HomepageProps) => {
                             </div>
                         </button>
                     </div>
-
-                    {/* 3. Inline AI Explanation */}
-                    <div className="mt-2 text-center animate-fade-in shrink-0 hidden md:block" style={{ animationDelay: '0.4s' }}>
-                        <p className="text-white/30 text-xs md:text-sm font-light tracking-wide">
-                            I can watch the product with you and tell you if it’s okay to buy — instantly.
-                        </p>
-                    </div>
                     {/* 5. Suggested Chips */}
                     <div className="flex flex-wrap justify-center gap-2 mt-auto md:mt-12 mb-2 md:mb-4 animate-fade-in shrink-0" style={{ animationDelay: '0.4s' }}>
                         {[
@@ -277,13 +249,6 @@ export const Homepage = ({ onAnalysisComplete }: HomepageProps) => {
                                 {suggestion}
                             </button>
                         ))}
-                    </div>
-
-                    {/* 6. Minimal Philosophy */}
-                    <div className="flex items-center justify-center gap-6 text-[10px] tracking-widest uppercase text-white/20 animate-fade-in min-h-[20px] mb-2" style={{ animationDelay: '0.5s' }}>
-                        <span>No Data Dumps</span>
-                        <span className="w-1 h-1 rounded-full bg-white/10" />
-                        <span>Always Clear</span>
                     </div>
 
                 </div>

@@ -1,8 +1,8 @@
-# Encode Health
+# ClarioAI
 
 > **AI that sees what you eat.**
 
-Encode Health is a smart nutritional scanner designed to help you make better dietary decisions. By leveraging AI to analyze food ingredients, it provides instant, easy-to-understand insights into the nutritional value of your food.
+ClarioAI is a smart nutritional scanner designed to help you make better dietary decisions. By leveraging AI to analyze food ingredients, it provides instant, easy-to-understand insights into the nutritional value of your food.
 
 ## Features
 

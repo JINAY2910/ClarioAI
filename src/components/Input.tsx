@@ -135,8 +135,8 @@ export const Input: React.FC<InputProps> = ({ onSend }) => {
                 <button
                     onClick={toggleVoice}
                     className={`p-2 rounded-full flex items-center justify-center cursor-pointer transition-all duration-200 border border-transparent ${isListening
-                            ? 'text-red-500 bg-red-500/10 hover:bg-red-500/20'
-                            : 'text-white/40 bg-transparent hover:bg-white/10 hover:text-white'
+                        ? 'text-red-500 bg-red-500/10 hover:bg-red-500/20'
+                        : 'text-white/40 bg-transparent hover:bg-white/10 hover:text-white'
                         }`}
                 >
                     {isListening ? (
@@ -157,8 +157,8 @@ export const Input: React.FC<InputProps> = ({ onSend }) => {
                 <button
                     onClick={handleSend}
                     className={`w-10 h-10 rounded-full flex items-center justify-center border border-transparent transition-all duration-200 ${text.trim()
-                            ? 'bg-white text-black cursor-pointer shadow-[0_0_15px_rgba(255,255,255,0.3)] hover:scale-105 active:scale-95'
-                            : 'bg-white/5 text-background cursor-default opacity-50'
+                        ? 'bg-white text-black cursor-pointer shadow-[0_0_15px_rgba(255,255,255,0.3)] hover:scale-105 active:scale-95'
+                        : 'bg-white/5 text-background cursor-default opacity-50'
                         }`}
                 >
                     <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">

@@ -1,7 +1,7 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { AnalysisResult, type AnalysisData } from './AnalysisResult';
 import { Input } from './Input';
-import { Bot, User, Sparkles } from 'lucide-react';
+import { Bot, User, Sparkles, ArrowLeft } from 'lucide-react';
 
 import { aiService } from '../services/ai';
 
@@ -79,6 +79,14 @@ export const AnalysisChat: React.FC<AnalysisChatProps> = ({ data, onReset }) => 
             <div className="absolute top-[-10%] right-[-10%] w-[500px] h-[500px] bg-emerald-500/10 rounded-full blur-[120px] pointer-events-none" />
             <div className="absolute bottom-[-10%] left-[-10%] w-[500px] h-[500px] bg-blue-500/10 rounded-full blur-[120px] pointer-events-none" />
 
+            {/* Back Button */}
+            <button
+                onClick={onReset}
+                className="absolute top-24 left-4 z-[60] p-3 rounded-full bg-black/60 text-white hover:bg-white/20 backdrop-blur-xl border border-white/10 transition-all duration-300 shadow-xl"
+            >
+                <ArrowLeft size={20} />
+            </button>
+
             {/* Scrollable Content Area */}
             <div className="flex-1 overflow-y-auto overflow-x-hidden pb-[calc(120px+env(safe-area-inset-bottom))] scroll-smooth">
                 <div className="max-w-xl mx-auto w-full">
@@ -141,18 +149,11 @@ export const AnalysisChat: React.FC<AnalysisChatProps> = ({ data, onReset }) => 
             </div>
 
             {/* Floating Input Dock */}
-            <div className="absolute bottom-0 left-0 right-0 z-20 pb-[calc(0.5rem+env(safe-area-inset-bottom,20px))] pt-24 px-4 bg-gradient-to-t from-black via-black/80 to-transparent pointer-events-none">
+            <div className="absolute bottom-0 left-0 right-0 z-20 pb-0 pt-24 px-4 bg-gradient-to-t from-black via-black/80 to-transparent pointer-events-none">
                 <div className="max-w-xl mx-auto w-full pointer-events-auto">
                     <div className="backdrop-blur-xl bg-white/10 border border-white/10 rounded-[28px] p-1.5 shadow-2xl shadow-black/50 ring-1 ring-white/5 transform transition-all hover:bg-white/[0.12] hover:scale-[1.01]">
                         <Input onSend={handleSend} />
                     </div>
-
-                    <button
-                        onClick={onReset}
-                        className="w-full text-center mt-2 text-[11px] font-semibold tracking-widest text-white/30 hover:text-white/60 transition-colors uppercase py-1 cursor-pointer"
-                    >
-                        Start New Scan
-                    </button>
                 </div>
             </div>
         </div>
