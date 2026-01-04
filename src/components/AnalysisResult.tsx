@@ -9,6 +9,11 @@ export interface AnalysisData {
     whyItMatters: string;
     tradeOffs?: string;
     uncertaintyNote?: string;
+    summaryChips?: {
+        label: string;
+        color: string;
+        emoji: string;
+    }[];
     suggestedQuestions: string[];
     dataSource?: 'ocr' | 'external' | 'hybrid';
 }

@@ -23,7 +23,7 @@ const MOCK_ANALYSIS: AnalysisData = {
     ],
     whyItMatters: "Regular consumption of high-sugar products can create habits around sweet tastes and may affect your child's relationship with food over time.",
     uncertaintyNote: "The label mentions 'Natural Colors' but doesn't specify the source. Long-term impact of the specific flavor additives is not well-documented.",
-    summary: "While marketed as a health booster, the ingredient profile resembles a confectionary product. Proceed with moderation if sugar intake is a concern."
+    suggestedQuestions: ["Is there a healthier alternative?", "What are the long-term effects?"]
 };
 
 export const CameraScanner: React.FC<CameraScannerProps> = ({ isOpen, onClose, onScan, initialLiveMode = false }) => {

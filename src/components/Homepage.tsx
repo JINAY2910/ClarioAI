@@ -115,7 +115,7 @@ export const Homepage = ({ onAnalysisComplete }: HomepageProps) => {
                     { label: 'Try Image', color: 'green', emoji: '📸' }
                 ],
                 whyItMatters: 'Image analysis allows us to read the exact ingredient list on the package.',
-                summary: 'Please upload an image for a complete analysis.'
+                suggestedQuestions: []
             };
             onAnalysisComplete(mockData);
             setTextInput('');
