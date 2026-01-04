@@ -179,8 +179,8 @@ export class GeminiService {
         const imagePart = await this.fileToGenerativePart(file);
 
         const prompt = userPrompt
-            ? `Answer in the EXACT SAME LANGUAGE as this question: "${userPrompt}". If the question is in Hindi, respond in Hindi. If in English, respond in English. Give a brief health-focused answer in 2-3 lines that includes the key reason why, focusing on health impact. Do not use emojis.`
-            : "Should I eat this? Give a brief health-focused answer in 2-3 lines explaining the health impact and why or why not. Do not use emojis.";
+            ? `Answer in the EXACT SAME LANGUAGE as this question: "${userPrompt}". If the question is in Hindi, respond in Hindi. If in English, respond in English. Give a brief health-focused answer in 2-3 lines that includes the key reason why, focusing on health impact. Do not use emojis or any markdown formatting (no asterisks, no bold, no italics). Use plain text only.`
+            : "Should I eat this? Give a brief health-focused answer in 2-3 lines explaining the health impact and why or why not. Do not use emojis or any markdown formatting (no asterisks, no bold, no italics). Use plain text only.";
 
         try {
             const result = await this.model.generateContent([prompt, imagePart]);
