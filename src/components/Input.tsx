@@ -4,9 +4,10 @@ import { startListening, stopListening, isSpeechSupported } from '../services/sp
 
 interface InputProps {
     onSend?: (text: string, file?: File) => void;
+    allowAttachments?: boolean;
 }
 
-export const Input: React.FC<InputProps> = ({ onSend }) => {
+export const Input: React.FC<InputProps> = ({ onSend, allowAttachments = false }) => {
     const [text, setText] = React.useState('');
     const [interimText, setInterimText] = React.useState('');
     const [isListening, setIsListening] = React.useState(false);
@@ -108,15 +109,17 @@ export const Input: React.FC<InputProps> = ({ onSend }) => {
             />
 
             {/* Attachment Button */}
-            <button
-                className="p-2 text-white/40 rounded-full flex items-center justify-center cursor-pointer transition-all duration-200 bg-white/5 border border-transparent hover:bg-white/10 hover:text-white hover:border-white/10"
-                onClick={handleFileClick}
-            >
-                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                    <line x1="12" y1="5" x2="12" y2="19" />
-                    <line x1="5" y1="12" x2="19" y2="12" />
-                </svg>
-            </button>
+            {allowAttachments && (
+                <button
+                    className="p-2 text-white/40 rounded-full flex items-center justify-center cursor-pointer transition-all duration-200 bg-white/5 border border-transparent hover:bg-white/10 hover:text-white hover:border-white/10"
+                    onClick={handleFileClick}
+                >
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                        <line x1="12" y1="5" x2="12" y2="19" />
+                        <line x1="5" y1="12" x2="19" y2="12" />
+                    </svg>
+                </button>
+            )}
 
             <input
                 type="text"

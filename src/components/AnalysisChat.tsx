@@ -91,7 +91,7 @@ export const AnalysisChat: React.FC<AnalysisChatProps> = ({ data, onReset }) => 
             <div className="flex-1 overflow-y-auto overflow-x-hidden pb-[calc(120px+env(safe-area-inset-bottom))] scroll-smooth">
                 <div className="max-w-xl mx-auto w-full">
                     {/* 1. Analysis Result (Context) */}
-                    <AnalysisResult data={data} onReset={onReset} />
+                    <AnalysisResult data={data} onReset={onReset} onSuggestionClick={handleSend} />
 
                     {/* 2. Chat Section */}
                     {messages.length > 0 && (
