@@ -193,8 +193,8 @@ export const Homepage = ({ onAnalysisComplete }: HomepageProps) => {
                             style={{ animationDelay: '0.2s' }}
                         >
                             <div className="flex items-start justify-between shrink-0 w-auto md:w-full">
-                                <div className="w-16 h-16 md:w-16 md:h-16 rounded-2xl bg-gradient-to-br from-emerald-500/20 to-teal-500/10 flex items-center justify-center group-hover:scale-110 transition-transform duration-300">
-                                    <ScanLine className="w-8 h-8 md:w-8 md:h-8 text-emerald-400" />
+                                <div className="w-16 h-16 md:w-16 md:h-16 rounded-2xl bg-gradient-to-br from-emerald-500/20 to-teal-500/10 flex items-center justify-center group-hover:scale-110 transition-transform duration-300 border border-emerald-500/20">
+                                    <ScanLine className="w-8 h-8 md:w-8 md:h-8 text-emerald-400 animate-pulse duration-[3000ms]" />
                                 </div>
                                 <div className="hidden md:block opacity-0 group-hover:opacity-100 transition-opacity text-white/30">
                                     <ArrowUp className="w-6 h-6 rotate-45" />

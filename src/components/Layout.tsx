@@ -23,7 +23,7 @@ export const Layout: React.FC<LayoutProps> = ({ children, activeTab, onNavigate 
         </button>
 
         <div className="flex items-center gap-2">
-          {activeTab === 'results' && (
+          {(activeTab === 'results' || activeTab === 'history') && (
             <button
               onClick={() => onNavigate('home')}
               className="p-2 rounded-full hover:bg-white/10 text-white/70 hover:text-white transition-colors flex items-center gap-2"
@@ -32,14 +32,16 @@ export const Layout: React.FC<LayoutProps> = ({ children, activeTab, onNavigate 
               <LayoutGrid className="w-6 h-6" />
             </button>
           )}
-          {/* History Button */}
-          <button
-            onClick={() => onNavigate('history')}
-            className="p-2 rounded-full hover:bg-white/10 text-white/70 hover:text-white transition-colors"
-            title="History"
-          >
-            <Clock className="w-6 h-6" />
-          </button>
+          {/* History Button - Only show on home or results (not history tab itself) */}
+          {activeTab !== 'history' && (
+            <button
+              onClick={() => onNavigate('history')}
+              className="p-2 rounded-full hover:bg-white/10 text-white/70 hover:text-white transition-colors"
+              title="History"
+            >
+              <Clock className="w-6 h-6" />
+            </button>
+          )}
         </div>
       </header>
 

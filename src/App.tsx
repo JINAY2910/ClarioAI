@@ -3,12 +3,15 @@ import { Layout } from './components/Layout'
 import { Homepage } from './components/Homepage'
 import { AnalysisChat } from './components/AnalysisChat';
 import { type AnalysisData } from './components/AnalysisResult';
+import { HistoryView } from './components/HistoryView';
+import { historyService } from './services/history';
 
 const AppContent = () => {
   const [activeTab, setActiveTab] = useState('home');
   const [analysisData, setAnalysisData] = useState<AnalysisData | null>(null);
 
   const handleAnalysisComplete = (data: AnalysisData) => {
+    historyService.save(data);
     setAnalysisData(data);
     setActiveTab('results');
   };
@@ -30,15 +33,13 @@ const AppContent = () => {
         );
       case 'history':
         return (
-          <div className="flex flex-col items-center justify-center h-full text-secondary gap-4">
-            <span>History Limit Reached</span>
-            <button
-              onClick={() => setActiveTab('home')}
-              className="px-4 py-2 bg-white/10 hover:bg-white/20 rounded-lg text-white transition-colors text-sm"
-            >
-              Back to Home
-            </button>
-          </div>
+          <HistoryView
+            onSelect={(data) => {
+              setAnalysisData(data);
+              setActiveTab('results');
+            }}
+            onBack={() => setActiveTab('home')}
+          />
         );
       case 'settings':
         return <div className="flex items-center justify-center h-full text-secondary">Settings Unavailable</div>;
