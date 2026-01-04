@@ -1,5 +1,5 @@
 import { useState, useRef, useEffect } from 'react';
-import { Camera, ArrowUp, Sparkles, ScanLine, Mic, Eye } from 'lucide-react';
+import { Camera, ArrowUp, Sparkles, Scan, Mic, Eye } from 'lucide-react';
 import { CameraScanner } from './CameraScanner';
 import { type AnalysisData } from './AnalysisResult';
 import { startListening, stopListening, isSpeechSupported } from '../services/speech';
@@ -189,18 +189,21 @@ export const Homepage = ({ onAnalysisComplete }: HomepageProps) => {
                         {/* 3. Primary Action - Check a Product */}
                         <button
                             onClick={handleNormalScanClick}
-                            className="w-full shrink-0 h-32 md:h-full bg-white/5 border border-emerald-500/20 rounded-3xl p-4 md:p-6 text-left hover:bg-white/10 hover:border-emerald-500/40 transition-all duration-300 group animate-fade-in flex flex-row md:flex-col md:justify-between items-center md:items-start gap-4 md:gap-0 min-h-0"
+                            className="w-full shrink-0 h-32 md:h-full bg-white/5 border border-emerald-500/20 rounded-3xl p-4 md:p-6 text-left hover:bg-white/10 hover:border-emerald-500/40 transition-all duration-300 group animate-fade-in flex flex-row md:flex-col md:justify-between items-center md:items-start gap-4 md:gap-0 min-h-0 relative overflow-hidden"
                             style={{ animationDelay: '0.2s' }}
                         >
+                            {/* Subtle glow */}
+                            <div className="absolute -right-10 -bottom-10 w-32 h-32 bg-emerald-500/5 blur-[50px] rounded-full pointer-events-none opacity-0 group-hover:opacity-100 transition-opacity" />
+
                             <div className="flex items-start justify-between shrink-0 w-auto md:w-full">
                                 <div className="w-16 h-16 md:w-16 md:h-16 rounded-2xl bg-gradient-to-br from-emerald-500/20 to-teal-500/10 flex items-center justify-center group-hover:scale-110 transition-transform duration-300 border border-emerald-500/20">
-                                    <ScanLine className="w-8 h-8 md:w-8 md:h-8 text-emerald-400 animate-pulse duration-[3000ms]" />
+                                    <Scan className="w-8 h-8 md:w-8 md:h-8 text-emerald-400 animate-pulse duration-[3000ms]" />
                                 </div>
                                 <div className="hidden md:block opacity-0 group-hover:opacity-100 transition-opacity text-white/30">
                                     <ArrowUp className="w-6 h-6 rotate-45" />
                                 </div>
                             </div>
-                            <div className="flex-1 min-w-0">
+                            <div className="flex-1 min-w-0 flex flex-col justify-center md:justify-end pb-1">
                                 <h3 className="text-xl md:text-lg font-medium text-white mb-1 md:mb-1">Check a product</h3>
                                 <p className="text-white/40 text-sm md:text-sm whitespace-nowrap overflow-hidden text-ellipsis">Scan, type, or show ingredients</p>
                             </div>
@@ -223,14 +226,14 @@ export const Homepage = ({ onAnalysisComplete }: HomepageProps) => {
                                     Real-time AI
                                 </div>
                             </div>
-                            <div className="relative flex-1 min-w-0">
+                            <div className="relative flex-1 min-w-0 flex flex-col justify-center md:justify-end pb-1">
                                 <div className="flex items-center gap-2 mb-1">
                                     <h3 className="text-xl md:text-lg font-medium text-white">Live Vision</h3>
                                     <div className="md:hidden opacity-60 text-[9px] font-bold tracking-wider text-emerald-400 uppercase bg-emerald-500/10 px-2 py-0.5 rounded">
                                         Real-time AI
                                     </div>
                                 </div>
-                                <p className="text-white/40 text-sm md:text-sm leading-tight overflow-hidden text-ellipsis block">Let me watch and guide you in real time.</p>
+                                <p className="text-white/40 text-sm md:text-sm leading-tight overflow-hidden text-ellipsis block">Let me watch and guide</p>
                             </div>
                         </button>
                     </div>
