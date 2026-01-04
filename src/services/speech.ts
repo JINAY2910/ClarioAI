@@ -10,7 +10,6 @@ export const speak = (
         return;
     }
 
-    // Cancel any currently playing speech to avoid queueing
     window.speechSynthesis.cancel();
 
     const utterance = new SpeechSynthesisUtterance(text);
@@ -19,7 +18,6 @@ export const speak = (
     utterance.volume = 1.0;
     utterance.lang = lang;
 
-    // Helper to execute verify and speak
     const doSpeak = () => {
         const voices = window.speechSynthesis.getVoices();
         if (voices.length > 0) {
@@ -40,14 +38,11 @@ export const speak = (
         }
     };
 
-    // Retry getting voices if empty (common Chrome bug)
     if (window.speechSynthesis.getVoices().length === 0) {
-        // Wait for voices to load
         window.speechSynthesis.onvoiceschanged = () => {
-            window.speechSynthesis.onvoiceschanged = null; // Remove listener
+            window.speechSynthesis.onvoiceschanged = null;
             doSpeak();
         };
-        // Fallback if event never fires
         setTimeout(() => {
             if (!window.speechSynthesis.speaking && !window.speechSynthesis.pending) {
                 doSpeak();
@@ -70,8 +65,6 @@ export const speak = (
         console.error("Speech synthesis error", e);
         onEnd?.();
     };
-
-
 };
 
 let recognition: any = null;
@@ -90,21 +83,25 @@ export const startListening = (
     const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
 
     if (!SpeechRecognition) {
-        console.warn("Speech recognition not supported");
         onError?.("Speech recognition not supported");
         return;
     }
 
+    // Clean up existing instance
     if (recognition) {
-        recognition.onend = null; // Prevent previous instance from triggering callbacks
-        recognition.stop();
+        try {
+            recognition.onresult = null;
+            recognition.onerror = null;
+            recognition.onend = null;
+            recognition.stop();
+        } catch (e) { /* ignore */ }
         recognition = null;
     }
 
     recognition = new SpeechRecognition();
-    recognition.continuous = true; // Keep listening
-    recognition.interimResults = true; // Enable real-time results
-    recognition.lang = 'en-IN'; // Good for Hinglish/Indian accents
+    recognition.continuous = true;
+    recognition.interimResults = true;
+    recognition.lang = 'en-IN';
 
     recognition.onresult = (event: any) => {
         let interimTranscript = '';
@@ -119,8 +116,10 @@ export const startListening = (
             }
         }
 
-        if (finalTranscript || interimTranscript) {
-            onResult(finalTranscript || interimTranscript, !!finalTranscript);
+        // Send results to UI
+        const fullText = finalTranscript + interimTranscript;
+        if (fullText) {
+            onResult(fullText, !!finalTranscript);
         }
     };
 
@@ -130,29 +129,38 @@ export const startListening = (
     };
 
     recognition.onend = () => {
+        console.log("Speech recognition ended");
         onStop?.();
     };
 
     try {
         recognition.start();
-    } catch (e) {
+        console.log("Speech recognition started");
+    } catch (e: any) {
         console.error("Failed to start recognition", e);
+        if (e?.name === 'InvalidStateError' || e?.message?.includes('already started')) {
+            console.log("Recognition already active");
+            return;
+        }
         onError?.("Failed to start recording");
     }
 };
 
 export const stopListening = () => {
     if (recognition) {
+        recognition.onresult = null;
+        recognition.onerror = null;
         recognition.onend = null;
-        recognition.stop();
+        try {
+            recognition.stop();
+        } catch (e) {
+            // ignore
+        }
         recognition = null;
     }
 };
 
 export const detectLanguage = (text: string): string => {
-    // Simple heuristic: Devanagari range for Hindi/Marathi/Gujarati-ish (broadly)
-    // Gujarati range: 0x0A80–0x0AFF
-    // Devanagari: 0x0900–0x097F
     const hasDevanagari = /[\u0900-\u097F]/.test(text);
     const hasGujarati = /[\u0A80-\u0AFF]/.test(text);
 

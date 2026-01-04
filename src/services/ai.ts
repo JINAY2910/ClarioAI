@@ -179,8 +179,8 @@ export class GeminiService {
         const imagePart = await this.fileToGenerativePart(file);
 
         const prompt = userPrompt
-            ? `Answer conversationaly in the user's language: ${userPrompt}`
-            : "Quickly: Should I eat this? Why? (Max 15 words)";
+            ? `Answer conversationally in the user's language: ${userPrompt}. Give a brief health-focused answer in 2-3 lines that includes the key reason why, focusing on health impact. Do not use emojis.`
+            : "Should I eat this? Give a brief health-focused answer in 2-3 lines explaining the health impact and why or why not. Do not use emojis.";
 
         try {
             const result = await this.model.generateContent([prompt, imagePart]);

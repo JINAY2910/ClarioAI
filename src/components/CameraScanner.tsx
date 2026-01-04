@@ -126,26 +126,31 @@ export const CameraScanner: React.FC<CameraScannerProps> = ({ isOpen, onClose, o
                 setLastSpoken({ text: transcript, sender: 'user' });
                 lastSpokenRef.current = transcript;
 
-                // Only analyze if the user has finished a sentence AND AI isn't currently talking
+                // Stop listening immediately if we have a final result (or forced final from silence)
+                // This prevents "hearing yourself" or ongoing noise.
+                if (isFinal) {
+                    // We commit to this interaction.
+                    // The speech service might have already stopped, but we ensure state is clear.
+                }
+
                 if (isFinal && !isAISpeaking.current) {
                     const file = captureFrameAsFile();
                     if (file) {
                         try {
                             const { aiService } = await import('../services/ai');
-                            const { speak } = await import('../services/speech');
+                            const { speak, stopListening } = await import('../services/speech');
 
-                            // Pause passive loop essentially by resetting intent? 
-                            // Actually just analyze.
+                            // EXPLICITLY STOP LISTENING NOW.
+                            // We do not want to hear anything else while thinking.
+                            stopListening();
+
                             const responseText = await aiService.analyzeStreamFrame(file, transcript);
 
                             if (responseText) {
-                                // Don't show text yet - wait for speech to start for sync
-                                // setLastSpoken({ text: responseText, sender: 'ai' }); // REMOVED
                                 lastSpokenRef.current = responseText;
-
                                 const langKey = detectLanguage(responseText);
 
-                                // Show text immediately (Fail-safe)
+                                // Show text immediately
                                 setLastSpoken({ text: responseText, sender: 'ai' });
                                 lastSpokenRef.current = responseText;
 
@@ -154,38 +159,38 @@ export const CameraScanner: React.FC<CameraScannerProps> = ({ isOpen, onClose, o
                                     langKey,
                                     () => { // onStart
                                         isAISpeaking.current = true;
-                                        // Safety valve: Force reset after 15s in case onEnd never fires
-                                        setTimeout(() => {
-                                            if (isAISpeaking.current) {
-                                                console.warn("Force resetting AI speech state");
-                                                isAISpeaking.current = false;
-                                            }
-                                        }, 15000);
                                     },
                                     () => { // onEnd
                                         isAISpeaking.current = false;
+                                        // ONE SHOT: Completely finish the session.
+                                        setIsLiveMode(false);
                                     }
                                 );
+                            } else {
+                                // No response? Just finish.
+                                setIsLiveMode(false);
                             }
                         } catch (e) {
                             console.error("Live analysis error", e);
+                            setIsLiveMode(false);
                         }
                     }
                 }
             },
             () => {
-                // onStop: Auto-restart if we are still in live mode
-                if (isLiveModeRef.current) {
-                    console.log("Speech recognition stopped, restarting...");
-                    startLiveAnalysis();
-                }
+                // onStop: Do NOT auto-restart. Let it be one-shot.
+                console.log("Speech recognition stopped.");
             },
             (err) => {
-                console.warn("Speech error, restarting...", err);
-                if (isLiveModeRef.current) {
-                    // Small delay to prevent thrashing loop on hard errors
-                    setTimeout(() => startLiveAnalysis(), 1000);
+                console.warn("Speech error", err);
+
+                // Only handle permission errors with user guidance
+                if (err === 'not-allowed' || err === 'service-not-allowed') {
+                    isLiveModeRef.current = false;
+                    setIsLiveMode(false);
+                    alert("🎤 Microphone access is required for Live Vision.\n\nPlease:\n1. Click the 🔒 or ⓘ icon in your browser's address bar\n2. Allow microphone access for this site\n3. Refresh the page and try again");
                 }
+                // For all other errors, just log and let it stop naturally
             }
         );
 
@@ -218,6 +223,8 @@ export const CameraScanner: React.FC<CameraScannerProps> = ({ isOpen, onClose, o
                                 },
                                 () => {
                                     isAISpeaking.current = false;
+                                    // Turn off live mode after one response
+                                    setIsLiveMode(false);
                                 }
                             );
                         }
