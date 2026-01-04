@@ -70,6 +70,24 @@ export class GeminiService {
     }
 
     /* ------------------------------------------------------------------
+       HELPER: ROBUST JSON PARSER
+       ------------------------------------------------------------------ */
+    private cleanAndParseJSON<T>(text: string): T {
+        // 1. Remove markdown code blocks
+        let clean = text.replace(/```json/g, '').replace(/```/g, '').trim();
+
+        // 2. Extract JSON object (find first { and last })
+        const firstBrace = clean.indexOf('{');
+        const lastBrace = clean.lastIndexOf('}');
+
+        if (firstBrace !== -1 && lastBrace !== -1) {
+            clean = clean.substring(firstBrace, lastBrace + 1);
+        }
+
+        return JSON.parse(clean);
+    }
+
+    /* ------------------------------------------------------------------
        MAIN ANALYSIS FLOW
        ------------------------------------------------------------------ */
     async analyzeImage(file: File): Promise<AnalysisData> {
@@ -91,8 +109,8 @@ export class GeminiService {
 
         try {
             const checkResult = await this.model.generateContent([checkPrompt, imagePart]);
-            const checkText = checkResult.response.text().replace(/```json/g, '').replace(/```/g, '').trim();
-            const checkData = JSON.parse(checkText);
+            const checkText = checkResult.response.text();
+            const checkData = this.cleanAndParseJSON<{ productName: string; isLagible: boolean }>(checkText);
 
             if (!checkData.isLagible && checkData.productName) {
                 console.log(`Ingredients unclear for ${checkData.productName}. Fetching from OpenFoodFacts...`);
@@ -130,15 +148,15 @@ export class GeminiService {
                 "whyItMatters": "string (The core reasoning. Why did you give this verdict?)",
                 "tradeOffs": "string (What are the pros and cons? e.g. 'Good protein but high sugar'.)",
                 "uncertaintyNote": "string (Optional. If data is missing or derived from OpenFoodFacts, mention it here cleanly.)",
-                "suggestedQuestions": ["string", "string", "string"] (3 short follow-up questions for the user to tap)
+                "suggestedQuestions": ["string", "string", "string"] (3 short follow-up questions for the user to tap),
+                 "summaryChips": [{ "label": "string", "color": "string", "emoji": "string" }] (3 chips summarizing key points)
             }
         `;
 
         try {
             const finalResult = await this.model.generateContent([basePrompt, imagePart]);
             const responseText = finalResult.response.text();
-            const cleanText = responseText.replace(/```json/g, '').replace(/```/g, '').trim();
-            const data = JSON.parse(cleanText) as AnalysisData;
+            const data = this.cleanAndParseJSON<AnalysisData>(responseText);
 
             // Inject datasource info
             data.dataSource = dataSource;

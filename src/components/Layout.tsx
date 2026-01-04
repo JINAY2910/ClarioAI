@@ -1,5 +1,5 @@
 import React from 'react';
-import { Clock } from 'lucide-react';
+import { Clock, LayoutGrid } from 'lucide-react';
 
 interface LayoutProps {
   children: React.ReactNode;
@@ -7,7 +7,7 @@ interface LayoutProps {
   onNavigate: (tab: string) => void;
 }
 
-export const Layout: React.FC<LayoutProps> = ({ children, onNavigate }) => {
+export const Layout: React.FC<LayoutProps> = ({ children, activeTab, onNavigate }) => {
 
   return (
     <div className="flex h-[100dvh] w-full overflow-hidden bg-background text-primary selection:bg-surface selection:text-white relative flex-col">
@@ -22,14 +22,25 @@ export const Layout: React.FC<LayoutProps> = ({ children, onNavigate }) => {
           <span className="text-lg font-semibold tracking-tight text-white">ClarioAI</span>
         </button>
 
-        {/* History Button */}
-        <button
-          onClick={() => onNavigate('history')}
-          className="p-2 rounded-full hover:bg-white/10 text-white/70 hover:text-white transition-colors"
-          title="History"
-        >
-          <Clock className="w-6 h-6" />
-        </button>
+        <div className="flex items-center gap-2">
+          {activeTab === 'results' && (
+            <button
+              onClick={() => onNavigate('home')}
+              className="p-2 rounded-full hover:bg-white/10 text-white/70 hover:text-white transition-colors flex items-center gap-2"
+              title="Back to Dashboard"
+            >
+              <LayoutGrid className="w-6 h-6" />
+            </button>
+          )}
+          {/* History Button */}
+          <button
+            onClick={() => onNavigate('history')}
+            className="p-2 rounded-full hover:bg-white/10 text-white/70 hover:text-white transition-colors"
+            title="History"
+          >
+            <Clock className="w-6 h-6" />
+          </button>
+        </div>
       </header>
 
       {/* Main Content */}

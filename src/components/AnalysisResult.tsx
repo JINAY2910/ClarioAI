@@ -26,7 +26,7 @@ interface AnalysisResultProps {
 
 export const AnalysisResult: React.FC<AnalysisResultProps> = ({ data, onSuggestionClick }) => {
     const [isThinkingExpanded, setIsThinkingExpanded] = useState(true);
-    const [isTradeoffExpanded, setIsTradeoffExpanded] = useState(false);
+    const [isTradeoffExpanded, setIsTradeoffExpanded] = useState(true);
 
     const getIntentStyle = () => {
         switch (data.intent) {
