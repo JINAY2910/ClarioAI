@@ -55,10 +55,12 @@ export const HistoryView: React.FC<HistoryViewProps> = ({ onSelect, onBack }) =>
     return (
         <div className="flex flex-col h-full w-full bg-black">
             {/* Header */}
-            <div className="flex items-center justify-between px-6 py-4 border-b border-white/5">
+            <div className="flex items-center justify-between px-4 md:px-6 h-16 border-b border-white/10 bg-zinc-950/70 backdrop-blur-xl sticky top-0 z-20 transition-all duration-300">
                 <div className="flex items-center gap-3">
-                    <Clock className="w-5 h-5 text-emerald-400" />
-                    <h2 className="text-lg font-medium text-white">
+                    <div className="p-2 rounded-xl bg-white/5 border border-white/5">
+                        <Clock className="w-4 h-4 text-emerald-400" />
+                    </div>
+                    <h2 className="text-lg font-semibold text-white tracking-wide">
                         {isSelectionMode ? `${selectedIds.size} Selected` : 'Scan History'}
                     </h2>
                 </div>
@@ -72,8 +74,8 @@ export const HistoryView: React.FC<HistoryViewProps> = ({ onSelect, onBack }) =>
                                         onClick={handleDeleteSelected}
                                         disabled={selectedIds.size === 0}
                                         className={`w-10 h-10 rounded-full transition-all flex items-center justify-center ${selectedIds.size > 0
-                                                ? 'bg-white text-rose-600 shadow-lg shadow-black/20 hover:bg-gray-100 hover:scale-110'
-                                                : 'bg-white/10 text-white'
+                                            ? 'bg-white text-rose-600 shadow-lg shadow-black/20 hover:bg-gray-100 hover:scale-110'
+                                            : 'bg-white/10 text-white'
                                             }`}
                                         title="Delete Selected"
                                     >
@@ -81,7 +83,7 @@ export const HistoryView: React.FC<HistoryViewProps> = ({ onSelect, onBack }) =>
                                     </button>
                                     <button
                                         onClick={toggleSelectionMode}
-                                        className="p-2 rounded-full text-white/50 hover:text-white hover:bg-white/10 transition-colors"
+                                        className="w-10 h-10 rounded-full bg-white/5 text-white/50 hover:text-white hover:bg-white/10 transition-colors flex items-center justify-center backdrop-blur-md"
                                         title="Cancel Selection"
                                     >
                                         <X className="w-5 h-5" />
@@ -90,7 +92,7 @@ export const HistoryView: React.FC<HistoryViewProps> = ({ onSelect, onBack }) =>
                             ) : (
                                 <button
                                     onClick={toggleSelectionMode}
-                                    className="px-3 py-1.5 rounded-lg text-xs font-medium bg-white/5 text-white/50 hover:text-white hover:bg-white/10 transition-colors"
+                                    className="px-4 py-1.5 rounded-full text-xs font-semibold bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 hover:bg-emerald-500/20 hover:scale-105 transition-all"
                                 >
                                     Select
                                 </button>
@@ -119,8 +121,8 @@ export const HistoryView: React.FC<HistoryViewProps> = ({ onSelect, onBack }) =>
                             key={item.id}
                             onClick={(e) => isSelectionMode ? toggleItemSelection(item.id, e) : onSelect(item)}
                             className={`w-full flex items-center gap-4 p-4 rounded-2xl border transition-all cursor-pointer group text-left ${isSelectionMode && selectedIds.has(item.id)
-                                    ? 'bg-emerald-500/10 border-emerald-500/30'
-                                    : 'bg-white/5 border-white/5 hover:bg-white/10 hover:border-white/10'
+                                ? 'bg-emerald-500/10 border-emerald-500/30'
+                                : 'bg-white/5 border-white/5 hover:bg-white/10 hover:border-white/10'
                                 }`}
                         >
                             {isSelectionMode ? (
