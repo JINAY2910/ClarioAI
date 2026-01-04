@@ -144,6 +144,9 @@ export const CameraScanner: React.FC<CameraScannerProps> = ({ isOpen, onClose, o
                             // We do not want to hear anything else while thinking.
                             stopListening();
 
+                            // Small delay to ensure microphone is fully released
+                            await new Promise(resolve => setTimeout(resolve, 100));
+
                             const responseText = await aiService.analyzeStreamFrame(file, transcript);
 
                             if (responseText) {
@@ -162,17 +165,16 @@ export const CameraScanner: React.FC<CameraScannerProps> = ({ isOpen, onClose, o
                                     },
                                     () => { // onEnd
                                         isAISpeaking.current = false;
-                                        // ONE SHOT: Completely finish the session.
-                                        setIsLiveMode(false);
+                                        // Keep Live Vision active for more questions
                                     }
                                 );
                             } else {
-                                // No response? Just finish.
-                                setIsLiveMode(false);
+                                // No response? Keep listening.
+                                console.log("No AI response, staying active");
                             }
                         } catch (e) {
                             console.error("Live analysis error", e);
-                            setIsLiveMode(false);
+                            // Keep Live Vision active even on error
                         }
                     }
                 }
@@ -223,8 +225,7 @@ export const CameraScanner: React.FC<CameraScannerProps> = ({ isOpen, onClose, o
                                 },
                                 () => {
                                     isAISpeaking.current = false;
-                                    // Turn off live mode after one response
-                                    setIsLiveMode(false);
+                                    // Keep Live Vision active
                                 }
                             );
                         }
